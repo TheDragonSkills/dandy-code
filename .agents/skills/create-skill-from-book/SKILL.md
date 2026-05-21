@@ -47,15 +47,16 @@ Rules for distributed files:
 
 ## Workflow
 
-1. Check `git status` before editing so existing user changes are visible.
-2. If regenerating this repository's Dandy Code skill, update the `book/` submodule before extraction. If the update is blocked by permissions or network access, say so and continue only if the user accepts the local snapshot.
-3. For full regeneration, remove the previous generated output directory only after confirming it is the intended output target and outside `book/`.
-4. Discover Markdown sources structurally, not by manual copy-paste. Prefer `rg --files book/content -g '*.md'` or the local equivalent, then sort paths for deterministic order.
-5. Parse or inspect headings, sections, lists, code fences, examples, warnings, recurring terms, and chapter themes.
-6. Keep an internal extraction checklist while working: chapter title, durable ideas, concrete rules, useful examples, uncertainty, and whether each source chapter is represented. This checklist is for validation, not for automatic inclusion in the generated skill package.
-7. Distill repeated ideas across chapters into merged agent behavior. Do not create a chapter-by-chapter book clone.
-8. Generate the skill package with a lean `SKILL.md` and only those supporting `references/` files that the installed agent may need during real tasks.
-9. Validate the result against the quality gate below, then check `git status` again.
+1. Before starting work, be sure to delete the `skills/dandy-code` folder.
+2. Check `git status` before editing so existing user changes are visible.
+3. If regenerating this repository's Dandy Code skill, update the `book/` submodule before extraction. If the update is blocked by permissions or network access, say so and continue only if the user accepts the local snapshot.
+4. For full regeneration, remove the previous generated output directory only after confirming it is the intended output target and outside `book/`.
+5. Discover Markdown sources structurally, not by manual copy-paste. Prefer `rg --files book/content -g '*.md'` or the local equivalent, then sort paths for deterministic order.
+6. Parse or inspect headings, sections, lists, code fences, examples, warnings, recurring terms, and chapter themes.
+7. Keep an internal extraction checklist while working: chapter title, durable ideas, concrete rules, useful examples, uncertainty, and whether each source chapter is represented. This checklist is for validation, not for automatic inclusion in the generated skill package.
+8. Distill repeated ideas across chapters into merged agent behavior. Do not create a chapter-by-chapter book clone.
+9. Generate the skill package with a lean `SKILL.md` and only those supporting `references/` files that the installed agent may need during real tasks.
+10. Validate the result against the quality gate below, then check `git status` again.
 
 ## Extraction Rules
 
