@@ -79,6 +79,13 @@ The generated skill should normally contain:
 - Examples or anti-examples only when they improve agent decisions.
 - `references/` files only for detailed operational guidance, larger examples, checklists, or domain notes that the installed agent may need.
 
+Description-specific rules:
+
+- Do not mention the source book title (`Dandy Code` or `Денди-код`) or the word `book`.
+- Do not mention Laravel by name; keep only the PHP language name when language specificity is needed.
+- Do not say the skill is for README quality control.
+- Do not say the skill is for safe AI coding or safer AI-assisted coding.
+
 Keep `SKILL.md` concise enough to load during normal work. Move detailed usable guidance into `references/` and link those files from `SKILL.md` with clear instructions about when to read them.
 
 Do not include files whose only purpose is to prove how the skill was generated. A generated skill is a reusable tool, not a build report.
@@ -89,6 +96,7 @@ Before calling the generated skill complete, verify:
 
 - The generated skill has valid frontmatter with `name` and `description` only.
 - The description is strong enough to trigger the skill without relying on a "when to use" section in the body.
+- The description follows all description-specific rules, including no book title, no `book` wording, no Laravel mention, no README quality-control claim, and no safe AI coding claim.
 - Instructions are agent-facing and actionable, not a reader-facing summary of the book.
 - Similar ideas from different chapters are merged instead of duplicated.
 - The generated skill uses only canonical Markdown sources and excludes drafts.
