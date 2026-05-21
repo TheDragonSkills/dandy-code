@@ -5,8 +5,6 @@
     <img src="https://banners.beyondco.de/Dandy%20Code%20Skill.png?pattern=topography&style=style_1&fontSize=100px&md=1&showWatermark=1&icon=book-open&theme=light&packageManager=&packageName=&description=by+The+Dragon+Code&images=book-open" alt="Dandy Code Skill">
 </picture>
 
-> Convert the Dandy Code book into practical AI-agent guidance for writing, reviewing, and refactoring code.
-
 This repository adapts the Markdown book [Dandy Code](https://github.com/tabuna/dandy-code) by Alexandr Chernyaev into a
 reusable agent skill. The source book is kept as a git submodule, while generated skill files are expected to live
 outside the submodule.
