@@ -65,6 +65,23 @@ Use this workflow when implementing or improving the converter:
 
 When the book contains prose aimed at human readers, rewrite it into instructions for an AI agent. Keep the voice direct and practical.
 
+## Skill Regeneration Workflow
+
+When the user asks to create, recreate, update, regenerate, or build the Dandy Code skill, follow this workflow:
+
+1. Update git submodules so `book/` contains the latest available source book.
+2. Remove the previous generated skill directory at `skills/dandy-code/` if it exists.
+3. Create the main skill file at `skills/dandy-code/SKILL.md`.
+4. Put supporting documentation, extracted references, chapter notes, or larger guidance files under `skills/dandy-code/references/`.
+5. Use only `book/content/` as the source for generated skill content.
+6. Ignore `book/draft/` completely.
+7. Reformulate the book content so the generated skill preserves the original meaning while becoming maximally useful for an AI agent during coding, review, refactoring, and explanation tasks.
+8. Translate the generated skill text into English.
+
+The generated skill should be agent-facing, not reader-facing. Convert narrative prose into operational guidance: triggers, rules, review checks, decision criteria, and concise examples.
+
+Do not copy the book chapter-by-chapter into the skill. Extract the durable ideas, merge repeated guidance, and keep traceability to the original `book/content/*.md` files through references or notes.
+
 ## Content Rules
 
 - Keep Russian source nuance intact when the generated skill is in Russian.
