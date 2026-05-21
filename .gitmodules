@@ -1,0 +1,4 @@
+[submodule "book"]
+	path = book
+	url = git@github.com:tabuna/dandy-code.git
+	branch = main
