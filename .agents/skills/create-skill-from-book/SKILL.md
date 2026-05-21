@@ -1,6 +1,6 @@
 ---
 name: create-skill-from-book
-description: Convert a Markdown book or curated Markdown source directory into a concise, agent-facing Codex skill. Use when asked to create, recreate, update, regenerate, or review a skill derived from book chapters or Markdown documentation, especially this repository's Dandy Code skill from book/content/ into skills/dandy-code/.
+description: Convert a Markdown book or curated Markdown source directory into a concise, agent-facing skill. Use when asked to create, recreate, update, regenerate, or review a skill derived from book chapters or Markdown documentation, especially this repository's Dandy Code skill.
 ---
 
 # Create Skill From Book
