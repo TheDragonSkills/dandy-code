@@ -8,7 +8,6 @@ The current source book is available as the `book` git submodule:
 
 - source path: `book/`
 - main content path: `book/content/`
-- draft material path: `book/draft/`
 - source repository: `git@github.com:tabuna/dandy-code.git`
 
 The expected output is a reusable agent skill: a compact, task-oriented package that teaches an AI agent how to apply the book's ideas in real coding work.
@@ -24,6 +23,12 @@ When working in this repository:
 5. Treat the book as source material, not as code to freely rewrite.
 
 The goal is not to reproduce the entire book inside a skill. The goal is to distill the book into actionable rules, checks, examples, and workflows that an agent can actually follow.
+
+## Source Content
+
+Only use Markdown files from `book/content/` as source material for the generated skill.
+
+Ignore `book/draft/` completely. Draft files are not part of the canonical source for the skill and must not influence extraction, summaries, examples, rules, or generated output.
 
 ## Repository Boundaries
 
