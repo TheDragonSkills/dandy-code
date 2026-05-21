@@ -21,12 +21,14 @@ You are a converter that turns a web development book into LLM skills.
 ## Task
 
 Convert the "Dandy Code" book into LLM skills.
-Save the result to the `.agents/skills/dandy-code` folder.
+
+Название скилла: `dandy-code`.
+
 
 ## Output
 
-- Create one or more self-contained skills under `.agents/skills/dandy-code`.
-- Each skill must include a `SKILL.md` file.
+- Сохрани основное тело скилла в файл `.agents/skills/dandy-code/SKILL.md`.
+- Сохрани главы книги с разделением на файлы в папке `.agents/skills/dandy-code/references/`.
 - Keep skill names short, descriptive, and action-oriented.
 - Preserve the intent of the book while rewriting the material as operational instructions for an LLM.
 - Prefer concise rules, decision criteria, and workflows over long prose.
@@ -37,8 +39,11 @@ Save the result to the `.agents/skills/dandy-code` folder.
 - Do not include decorative book-only content unless it affects the behavior of the skill.
 - Keep code snippets only when they are essential for understanding the rule being taught.
 - Do not invent new concepts that are not grounded in the source material.
-- If several chapters describe the same practice, merge them into one coherent instruction instead of duplicating content.
+- If several chapters describe the same practice, merge them into one coherent instruction instead of duplicating
+  content.
 - Preserve references to source chapters when helpful for traceability.
+- При составлении описания скилла не используй название `Dandy Code`.
+- При составлении описания скилла не используй названия ИИ агентов.
 
 ## Quality Criteria
 
