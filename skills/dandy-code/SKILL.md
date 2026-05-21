@@ -1,65 +1,60 @@
 ---
 name: dandy-code
-description: Apply Dandy Code guidance when writing, reviewing, refactoring, documenting, testing, or improving code for human readability, team consistency, PHP/Laravel quality, clean naming, maintainable control flow, useful tests, README quality, framework-aligned design, or safer AI-assisted coding.
+description: Improve everyday code clarity when writing, reviewing, refactoring, documenting, testing, or modernizing software; use for naming, formatting, control flow, API shape, PHP error handling, framework conventions, maintainability, deletion, upgrades, and human-centered use of coding assistants.
 ---
 
-# Dandy Code
+# Everyday Code Clarity
 
-Use this skill to make code look and feel cared for: readable, predictable,
-team-friendly, and easy to change. The guidance is derived from the Dandy Code
-book, but this skill is operational rather than literary: apply it directly
-while coding, reviewing, refactoring, testing, or explaining code.
-
-The central rule is simple: code is communication. The computer will execute
-many versions of the same idea; people need the version that reveals intent
-quickly and leaves fewer questions behind.
+Use this skill to make code easier for people to read, trust, change, and
+review. The central rule is simple: code is communication. The computer can run
+many versions of an idea; teammates need the version that reveals intent with
+the least unnecessary translation.
 
 ## Operating Mode
 
-1. Read the local context first: README, directory structure, style config,
-   framework conventions, tests, and nearby code.
+1. Read the local context first: entry documentation, directory structure,
+   style config, framework conventions, tests, and nearby code.
 2. Preserve the project's existing language, architecture, and formatting rules
-   unless they actively damage readability or correctness.
+   unless they actively obscure intent or correctness.
 3. Prefer small, intention-revealing changes over broad rewrites.
-4. Make code easier to scan before making it cleverer.
-5. Use tests, formatters, linters, and static analysis as the feedback loop.
+4. Make the main path easy to scan before making code clever or compact.
+5. Use tests, formatters, linters, static analysis, and coverage as feedback.
 6. In review, report concrete risks and unclear code, not personal taste.
+7. Treat generated code as a draft: understand it, reshape it, and make it fit
+   the surrounding system before accepting it.
 
 ## Core Rules
 
-- Treat README quality as part of code quality: a repository should explain what
-  it does, how to run it, how to test it, where code belongs, and who owns it.
-- Use the formatter and the ecosystem's standard style. Do not spend human
-  review time on spacing, braces, or import order when a tool can settle it.
-- Let code breathe: separate completed thoughts with blank lines, but do not
-  scatter blank lines between every statement.
+- Keep repository entry documentation useful: explain what the project does,
+  how to run it, how to test it, where code belongs, and who owns it.
+- Use the ecosystem's standard formatter and automate it. Human review should
+  focus on behavior, design, and clarity.
+- Separate completed thoughts with blank lines, but do not scatter blank lines
+  between every statement.
 - Use names that tell the truth. Avoid transliteration, vague placeholders,
   unexplained abbreviations, misleading plurals, and generic responsibility
   words when a concrete name exists.
-- Replace meaningful magic literals with named concepts, enums, value objects,
-  or expressive APIs. Do not replace every literal with a pile of constants when
-  a better abstraction removes the detail entirely.
-- Keep methods and classes small enough to understand without a map. Splitting
-  code is useful only when the extracted piece has its own real responsibility.
-- Prefer early returns, positive conditions, explicit assignments, and named
-  predicates over deep nesting, dense ternaries, and hidden work inside
-  conditions.
-- Keep method arguments few. Put optional arguments last, avoid bundles of
-  scalars, and use objects, named arguments, or fluent APIs when configuration
-  grows.
+- Make units, statuses, modes, and meaningful literals explicit with names,
+  enums, value objects, or expressive APIs.
+- Keep methods and classes small enough to understand without a map. Split code
+  when the extracted part has its own responsibility, not just to reduce lines.
+- Prefer guard clauses, positive conditions, explicit assignments, and named
+  predicates over deep nesting, dense ternaries, and hidden work in conditions.
+- Keep method arguments few. Put optional arguments last, avoid scalar bundles,
+  and use objects, named arguments, or fluent APIs when configuration grows.
 - Never catch and forget errors. Either handle them intentionally or log enough
   context for future diagnosis.
-- Write comments for why and context, not for what the next line already says.
-  Delete stale comments, commented-out code, and temporary excuses.
-- Tests are the first client of the code. Favor isolated unit tests for core
-  behavior, then add higher-level tests for integration boundaries and user
-  flows.
+- Write comments for why, constraints, examples, and context the code cannot
+  express clearly. Delete stale comments and commented-out code.
+- Make tests the first client of the code. Favor isolated unit tests for core
+  behavior, then add higher-level tests for integration boundaries and flows.
 - Work with the chosen framework instead of fighting it. Use its conventions
   unless the project has a strong, explicit reason not to.
 - Keep dependencies, frameworks, and language versions moving while the gap is
   small. "It still works" is not a maintenance strategy.
-- Treat AI-generated code as a draft. Verify context, symmetry, ownership
-  boundaries, security, tests, and fit with the surrounding system.
+- When using coding assistants, provide context, check paired components,
+  remove duplicated sources of truth, and rewrite the result until it feels
+  owned by the project.
 
 ## References
 
@@ -70,5 +65,5 @@ Read only the reference needed for the current task:
 - `references/php-and-framework-practices.md` for PHP-specific exception,
   logging, object, extension, and framework guidance.
 - `references/testing-and-maintenance.md` for test design, deletion,
-  modernization, and refactoring confidence.
+  modernization, and coding-assistant review.
 - `references/review-checklist.md` for a compact review checklist.

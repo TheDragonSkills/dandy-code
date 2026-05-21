@@ -5,12 +5,12 @@ Report concrete, actionable findings. Skip items that do not apply.
 
 ## Repository Entry
 
-- README states what the project does and why it exists.
+- Project purpose is clear.
 - Setup and run commands are current, minimal, and reproducible.
 - Test commands are documented.
 - Seed/reset or sample-data workflow is documented when local work needs data.
 - Directory structure explains where common kinds of code belong.
-- Maintainers, owners, or CODEOWNERS are discoverable.
+- Maintainers, owners, or owner files are discoverable.
 
 ## Structure
 
@@ -18,6 +18,7 @@ Report concrete, actionable findings. Skip items that do not apply.
 - Reusable, isolated behavior is not buried inside unrelated application code.
 - New files follow the project's established directory and naming conventions.
 - The change does not create a second source of truth for an existing concept.
+- Framework conventions are used where they already solve the problem.
 
 ## Readability
 
@@ -39,6 +40,8 @@ Report concrete, actionable findings. Skip items that do not apply.
 - Method arguments are few, ordered clearly, and typed where possible.
 - Boolean arguments do not split one method into two unrelated behaviors.
 - Objects are passed when scalars would leak domain rules or grow into bundles.
+- Extension points use callbacks, strategies, interfaces, or collaborators
+  before inheritance is introduced.
 
 ## Errors And Observability
 
@@ -66,9 +69,9 @@ Report concrete, actionable findings. Skip items that do not apply.
   platform feature is available.
 - Upgrade or compatibility work removes old workarounds when possible.
 
-## AI Output
+## Coding Assistant Output
 
 - Generated code was reviewed against surrounding context, not accepted as-is.
 - It does not continue messy local patterns when a small cleanup is part of the
   task.
-- It preserves security, ownership, tests, and framework expectations.
+- It preserves security, ownership, tests, logging, and framework expectations.

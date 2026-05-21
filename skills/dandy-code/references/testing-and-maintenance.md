@@ -1,7 +1,7 @@
 # Testing And Maintenance
 
 Use this reference when adding tests, reviewing test quality, deleting old code,
-or deciding whether a refactor is safe.
+modernizing dependencies, or deciding whether a refactor is safe.
 
 ## Tests As The First Client
 
@@ -9,8 +9,8 @@ or deciding whether a refactor is safe.
   confidence to a later manual QA phase.
 - Unit tests influence code quality most directly because they force behavior
   into small, isolated, callable units.
-- Feature, integration, browser, and smoke tests are still useful, but they
-  should not be the only proof that core logic works.
+- Feature, integration, browser, smoke, and end-to-end tests are useful, but
+  they should not be the only proof that core logic works.
 - If business logic is hard to unit test, move it out of controllers, commands,
   UI handlers, or framework glue into focused objects.
 
@@ -21,8 +21,8 @@ or deciding whether a refactor is safe.
   migration/rollback.
 - A good symmetry test proves that one stage's output can become the next
   stage's input without hidden manual translation.
-- Use these tests to reveal context gaps that a local implementation or AI tool
-  may miss.
+- Use these tests to reveal context gaps that a local implementation or coding
+  assistant may miss.
 
 ## Test Structure
 
@@ -70,6 +70,8 @@ public function test_moon_phase_for_known_date(): void
   old names once they no longer match behavior.
 - Rename aggressively when behavior changes. A stale name makes every reader
   inspect the implementation to know what is true.
+- Keep structure synchronized with current behavior; compatibility names and old
+  wrappers should have a clear reason and a planned end.
 - Tests reduce fear-driven development: with coverage in the right places, it is
   safer to delete, rename, upgrade, and simplify.
 
@@ -78,19 +80,22 @@ public function test_moon_phase_for_known_date(): void
 - Debuggers are useful tools, but needing to step through every line often means
   behavior is poorly localized.
 - Prefer extracting isolated rules and asserting their behavior directly.
-- When a bug requires heavy manual debugging, look for a missing test seam,
+- When a bug requires heavy manual debugging, look for a missing test boundary,
   hidden side effect, or overly broad responsibility.
 
-## AI-Assisted Code
+## Coding Assistants
 
 - Treat generated code as a draft that continues the style and context it was
   given.
-- Before accepting AI output, check:
+- Before accepting generated output, check:
   - Does it fit existing ownership boundaries?
-  - Did it duplicate a repository, service, query, or validation rule that
-    already exists elsewhere?
+  - Did it duplicate a repository, service, query, validation rule, or source of
+    truth that already exists elsewhere?
   - Does it preserve contracts between paired components?
   - Did it add tests at the right level?
   - Did it introduce security, logging, or error-handling gaps?
-- Make the code yours: read it, simplify it, rename it, and align it with local
-  conventions before committing.
+- Provide enough context before asking for changes. A narrow snippet can hide
+  exporters, importers, repositories, policies, validation, and naming
+  conventions that must stay consistent.
+- Make the result yours: read it, simplify it, rename it, align it with local
+  conventions, and understand the tradeoffs before committing.

@@ -1,7 +1,7 @@
 # PHP And Framework Practices
 
-Use this reference when working in PHP, Laravel, or a similar batteries-included
-framework. Adapt the ideas to local project conventions.
+Use this reference when working in PHP or in a batteries-included framework.
+Adapt the ideas to local project conventions.
 
 ## PHP Exceptions And Logging
 
@@ -33,11 +33,14 @@ try {
   formats.
 - Ensure logs are rotated, searchable, and connected to monitoring when the
   system is production-facing.
+- Heavy step-through debugging is often a design smell. If behavior can only be
+  understood by walking every line manually, look for hidden side effects,
+  excessive nesting, or logic that should be isolated and tested.
 
 ## Data And Objects
 
-- Prefer objects for values that carry rules, units, conversions, or domain
-  meaning: temperature, file size, money, date ranges, identifiers, text
+- Prefer objects for values that carry rules, units, conversions, validation, or
+  domain meaning: temperature, file size, money, date ranges, identifiers, text
   transformations.
 - Avoid nested raw arrays when behavior or structure matters. Encapsulate access
   behind objects, typed DTOs, collections, or framework models.
@@ -47,6 +50,8 @@ try {
   value or object so the call site shows the assignment explicitly.
 - Favor immutable value transformations for small domain objects when hidden
   mutation would surprise the reader.
+- For nested function calls that read inside-out, consider a small object or
+  fluent transformation chain that reads in execution order.
 
 ## Extension Points
 
@@ -57,15 +62,17 @@ try {
   is part of the domain or framework contract.
 - When a callback grows complex or appears in multiple places, promote it to a
   named object or interface.
+- A useful extension point lets the caller change behavior without editing the
+  class internals or copying subclasses.
 
 ## Framework Alignment
 
 - Treat a framework as a style contract, not only a dependency. Once a project
-  chooses Laravel, Symfony, Rails, Django, Phoenix, or another full framework,
-  use its conventions unless there is a documented project reason not to.
+  chooses a full framework, use its conventions unless there is a documented
+  project reason not to.
 - Avoid architectural layers that duplicate framework features by reflex. For
   example, do not add a repository abstraction over an ORM merely because a
-  generic rule says persistence must be hidden.
+  generic rule says persistence must always be hidden.
 - Use framework-native validation, authorization, routing, configuration,
   queueing, events, and testing helpers when they fit the problem.
 - Do not mix several frameworks' favorite parts into one project unless the
@@ -74,6 +81,8 @@ try {
 - If the team fundamentally dislikes a framework's philosophy, do not spend the
   project fighting it. Choose a better-fitting tool or accept the current one
   honestly.
+- Do not apply heavy patterns where the domain does not need them. A simple
+  CRUD application rarely benefits from ceremony designed for a complex domain.
 
 ## Modernization
 

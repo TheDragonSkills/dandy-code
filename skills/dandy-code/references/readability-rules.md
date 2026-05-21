@@ -1,7 +1,7 @@
 # Readability Rules
 
 Use these rules when writing or refactoring code that should be easier for
-humans to read. Treat them as decision criteria, not as rigid ceremony.
+humans to read. Treat them as decision criteria, not rigid ceremony.
 
 ## Code As Communication
 
@@ -9,15 +9,33 @@ humans to read. Treat them as decision criteria, not as rigid ceremony.
 - Prefer code that lets the reader understand intent from local context.
 - Remove avoidable mental translation: mixed naming languages, unexplained
   acronyms, dense expressions, and hidden side effects.
-- Make the common path easy to see. Put edge cases at the top and get them out
-  of the way.
+- Make the common path easy to see. Handle edge cases at the top and move on.
+- Do not chase perfect elegance. Consistent care matters more than theatrical
+  cleverness.
+
+## Repository Entry Documentation
+
+- The first file a new contributor opens should explain what the project does
+  and why it exists.
+- Include current, reproducible setup and run commands.
+- Document how to run tests, what kinds of tests exist, and any requirements
+  needed for them.
+- Document seed, reset, fixture, or sample-data workflows when local work needs
+  meaningful data.
+- Explain the directory structure in practical terms: where UI, modules,
+  services, config, routes, commands, utilities, or domain code belong.
+- For large repositories, make ownership discoverable through maintainers,
+  team contacts, or owner files. A project without an owner becomes hard to
+  trust and harder to change.
+- If teams cannot agree on common structure inside one repository, treat that
+  as an architecture signal, not as a naming inconvenience.
 
 ## Formatting And Breath
 
 - Follow the project's formatter and standard style. In PHP, this usually means
-  PSR-12, PER, Laravel Pint, PHP-CS-Fixer, or the project's configured tool.
-- Automate style checks and fixes where possible. Humans should review behavior,
-  design, and clarity rather than trailing spaces.
+  PSR-12, PER, Pint, PHP-CS-Fixer, or the project's configured tool.
+- Automate style checks and fixes where possible. Do not spend review time on
+  trailing spaces, brace placement, or import order.
 - Separate completed logical thoughts with one blank line:
 
 ```php
@@ -30,26 +48,27 @@ $zone->save();
 return $zone;
 ```
 
-- Avoid both extremes: a wall of uninterrupted statements and a file where every
-  line is isolated.
-- If unsure about a blank line, imagine a short comment at that boundary. If the
-  comment would name a new thought, the blank line is probably useful.
+- Avoid both extremes: a wall of uninterrupted statements and a file where
+  every line is isolated.
+- If unsure about a blank line, imagine a short comment at that boundary. If
+  the comment would name a new thought, the blank line is probably useful.
 
 ## Naming
 
-- Use the codebase's main technical language consistently. In most projects that
-  use English frameworks and libraries, names should also be English.
+- Use the codebase's main technical language consistently. In most projects
+  that use English frameworks and libraries, names should also be English.
 - Avoid transliteration and mixed-language names unless the domain itself uses a
   stable non-English term.
-- Avoid unexplained abbreviations: prefer `$user` over `$usr` unless the local
+- Avoid unexplained abbreviations. Prefer `$user` over `$usr` unless the local
   language or framework convention clearly accepts the abbreviation.
 - Avoid vague containers such as `$data`, `$info`, `$item`, `$value`, and
   `handleData()` once the context is larger than a tiny local scope.
-- Boolean names should read as boolean: `isAdmin`, `hasAccess`,
-  `shouldRetry`, `canExport`.
+- Boolean names should read as boolean: `isAdmin`, `hasAccess`, `shouldRetry`,
+  `canExport`.
 - Include units in names when raw numbers are used:
   `$temperatureInCelsius`, `$timeoutInSeconds`, `$sizeInBytes`.
-- Prefer a value object when units or conversions matter across the codebase:
+- Prefer value objects when units, conversions, validation, or domain meaning
+  matter across the codebase:
 
 ```php
 $temperature = Temperature::fromFahrenheit(98.6);
@@ -58,14 +77,15 @@ $temperature = Temperature::fromFahrenheit(98.6);
 - Be concise from context. Inside `PostCollection`, methods such as `add`,
   `has`, and `clear` can be clearer than repeating `Post` in every method name.
 - Watch generic responsibility suffixes such as `Manager`, `Handler`,
-  `Processor`, `Formatter`, and `Controller`. They are sometimes framework
-  terms, but in application code they often hide an unclear responsibility.
+  `Processor`, `Formatter`, and `Controller`. They may be valid framework
+  terms, but in application code they often hide unclear responsibility.
 - Use paired names that sound like a pair: `start`/`finish`,
   `begin`/`complete`, `open`/`close`.
 - Names must not lie. A method called `saveModels()` should not accept
   attributes for one model.
-- Define conventions for routes, translation keys, directories, event names, and
-  generated files when the language or framework does not already do it.
+- Define conventions for routes, translation keys, directories, event names,
+  generated files, and other places where language or framework rules do not
+  already settle the choice.
 
 ## Magic Values
 
@@ -79,18 +99,18 @@ if ($status === Status::ACTIVE) {
 
 - Use enums, constants, value objects, or framework types when they reveal the
   allowed set of values.
-- Do not blindly turn every literal into constants. If the code is manually
-  converting time, size, money, or units, prefer a dedicated API or object that
+- Do not blindly turn every literal into constants. If the code manually
+  converts time, size, money, or units, prefer a dedicated API or object that
   hides the mechanics.
 - Use named capture groups in regular expressions when the extracted parts have
   meaning.
 - Prefer string templates such as `sprintf()` or interpolation patterns over
-  long chains of concatenation when many variables are involved.
+  long concatenation chains when many variables are involved.
 
 ## Size And Responsibility
 
-- Long methods and classes make readers hold too much state in their head. Split
-  when a block has its own responsibility, not just to reduce line count.
+- Long methods and classes make readers hold too much state in their head.
+  Split when a block has its own responsibility, not just to reduce line count.
 - Avoid orchestration methods made of `step1()`, `step2()`, `load()`,
   `process()`, `finish()` if the extracted methods are only fragments with no
   independent meaning.
@@ -109,6 +129,11 @@ if ($user->canExport($document)) {
   expression readable.
 - Do not reuse one variable for multiple types. If raw data becomes an object,
   use two names such as `$userData` and `$user`.
+- Prefer the right data structure early. Repeated `isset()` chains, nested
+  arrays, and scattered key lookups are signs that an object, DTO, collection,
+  or value object may own the structure better.
+- Avoid hidden mutation through references. Prefer functions that return a new
+  value so the call site shows the assignment explicitly.
 
 ## Control Flow
 
@@ -130,7 +155,7 @@ if ($user !== null) {
 ```
 
 - Prefer positive conditions. If `! $user->isActive()` appears often, consider
-  `isInactive()`.
+  adding `isInactive()`.
 
 ## Arguments And APIs
 
