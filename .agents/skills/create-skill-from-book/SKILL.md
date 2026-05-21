@@ -48,3 +48,11 @@ When regenerating the skill:
 6. Ignore `book/draft/`.
 7. Rewrite the content for AI-agent usage instead of human book reading.
 8. Translate the resulting skill into English.
+## Source
+
+The source book is maintained separately:
+
+- repository: `git@github.com:tabuna/dandy-code.git`
+- source content: `book/content/`
+
+This repository focuses on the skill adaptation layer.

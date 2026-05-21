@@ -12,12 +12,3 @@ Run this command inside the project where you want to use the skill:
 ```shell
 npx skills add https://github.com/TheDragonCode/dandy-code-skill
 ```
-
-## Source
-
-The source book is maintained separately:
-
-- repository: `git@github.com:tabuna/dandy-code.git`
-- source content: `book/content/`
-
-This repository focuses on the skill adaptation layer.
