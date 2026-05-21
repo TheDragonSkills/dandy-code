@@ -25,7 +25,7 @@ If config.yaml doesn't exist, use defaults:
 
 **Read `.ai-factory/skill-context/aif-commit/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -54,7 +54,7 @@ If any rule is violated — fix the output before presenting it to the user.
    - Check rules hierarchy (resolved `paths.rules_file` + `rules.base` + named `rules.<area>`) for commit conventions
    - Missing optional files (`ROADMAP.md`, `RULES.md`) are `WARN`, not blockers
    - Never modify context artifacts from this command
-   - If the user wants a standalone rules-only pass, suggest `/aif-rules-check`; keep `/aif-commit` gate labels at `WARN` / `ERROR`
+   - If the user wants a standalone rules-only pass, suggest `$aif-rules-check`; keep `$aif-commit` gate labels at `WARN` / `ERROR`
 
 3. **Determine Commit Type**
    - `feat`: New feature
@@ -163,7 +163,7 @@ When invoked:
        - otherwise → `git push`
      - **Skip push** → end the workflow
 
-If argument provided (e.g., `/aif-commit auth`):
+If argument provided (e.g., `$aif-commit auth`):
 - Use it as the scope
 - Or as context for the commit message
 
@@ -171,7 +171,7 @@ If argument provided (e.g., `/aif-commit auth`):
 
 - Never commit secrets or credentials
 - Review large diffs carefully before committing
-- `/aif-commit` has no implicit strict mode — context gates are warning-first unless user explicitly requests blocking behavior
+- `$aif-commit` has no implicit strict mode — context gates are warning-first unless user explicitly requests blocking behavior
 - Treat the resolved architecture, roadmap, RULES.md, and description artifacts as read-only context in this command
 - If staged changes contain unrelated work (e.g., a feature + a bugfix, or changes to independent modules), suggest splitting into separate commits:
   1. Show which files/hunks belong to which commit

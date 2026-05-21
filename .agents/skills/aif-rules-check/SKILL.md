@@ -12,7 +12,7 @@ metadata:
 
 # Rules Compliance Gate
 
-Run a standalone read-only rules gate for project rules. This command checks rule compliance only; it does not replace `/aif-review` or `/aif-verify`.
+Run a standalone read-only rules gate for project rules. This command checks rule compliance only; it does not replace `$aif-review` or `$aif-verify`.
 
 ## Step 0: Load Contract
 
@@ -32,6 +32,12 @@ Run a standalone read-only rules gate for project rules. This command checks rul
 - `git.base_branch`
 - `rules.base`
 - named `rules.<area>` entries
+- `workflow.plan_id_format` (default: `slug`) — used by the optional branch-based plan-context lookup in Step 2.3.
+  Active values: `slug` and `sequential`. When `sequential`, the resolver globs
+  `<paths.plans>/[0-9]{4}_<branch_stem>.md` first and falls back to
+  `<paths.plans>/<branch_stem>.md` only if no numbered match is found.
+  `timestamp` and `uuid` are **reserved values** and currently behave like `slug`.
+  Treat any unknown value as `slug`.
 
 If config is missing or partial, use defaults:
 - `paths.rules_file`: `.ai-factory/RULES.md`
@@ -41,6 +47,7 @@ If config is missing or partial, use defaults:
 - `git.enabled`: `true`
 - `git.base_branch`: detect the repo default branch from git metadata; fall back to `main` only when detection is unavailable
 - `rules.base`: `.ai-factory/rules/base.md`
+- `workflow.plan_id_format`: `slug`
 
 If `paths.rules_file` is missing from config, default to `.ai-factory/RULES.md` instead of treating config as incomplete.
 If `git.base_branch` is missing from config, resolve the repository default branch from git metadata when possible; use `main` only as the final fallback.
@@ -49,7 +56,7 @@ If `git.base_branch` is missing from config, resolve the repository default bran
 
 **Read `.ai-factory/skill-context/aif-rules-check/SKILL.md`** - MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -129,9 +136,20 @@ If no rules sources resolve, return `WARN` rather than a hard failure.
 Optional plan context: use the active plan file only when it helps interpret scope or area relevance; absence of a plan is never a failure.
 
 Plan resolution order:
-1. Branch-based `paths.plans/<current-branch>.md`
-2. A single named full plan in `paths.plans`
-3. The fast plan at `paths.plan`
+1. Compute the **canonical branch stem** the same way as `$aif-plan`,
+   `$aif-implement`, and `$aif-improve`:
+   - get current branch via `git branch --show-current` (git mode only);
+   - `branch_stem` = current branch with every `/` replaced by `-`
+     (for example `feature/user-auth` → `feature-user-auth`).
+2. Branch-based lookup using `<branch_stem>`:
+   - when `workflow.plan_id_format = sequential`, glob first
+     `paths.plans/[0-9][0-9][0-9][0-9]_<branch_stem>.md` and pick the
+     highest-numbered match; emit a `WARN [aif-rules-check] multiple sequential
+     plans for <branch>: <list>; using <chosen>` if more than one matches;
+   - otherwise (or no numbered match), fall back to `paths.plans/<branch_stem>.md`.
+3. A single named full plan in `paths.plans` (the leading `NNNN_` prefix
+   counts as a match) when no branch-based plan resolves.
+4. The fast plan at `paths.plan`.
 
 Do not fail the rules check because a plan file is missing or ambiguous.
 
@@ -156,8 +174,8 @@ Evidence rules:
 This command is read-only: do not edit `RULES.md`, `rules/base.md`, `rules.<area>`, plan files, or source code.
 
 If rules are missing, stale, or need refinement:
-- Suggest `/aif-rules <rule text>` for axioms
-- Suggest `/aif-rules area:<name>` for area-specific rules
+- Suggest `$aif-rules <rule text>` for axioms
+- Suggest `$aif-rules area:<name>` for area-specific rules
 
 ## Step 5: Output
 
@@ -173,9 +191,9 @@ Required content:
 - final machine-readable `aif-gate-result` fenced JSON block
 
 When useful, suggest the next best workflow:
-- `/aif-review` for broader code review
-- `/aif-verify` for full plan-completeness verification
-- `/aif-rules` when the underlying rules need to be captured or corrected
+- `$aif-review` for broader code review
+- `$aif-verify` for full plan-completeness verification
+- `$aif-rules` when the underlying rules need to be captured or corrected
 
 Machine-readable gate result:
 - Append one final fenced `aif-gate-result` JSON block after the human-readable rules report.
@@ -184,8 +202,8 @@ Machine-readable gate result:
 - Use `"blocking": true|false`; set it to `true` only for explicit hard-rule violations that produce a human `FAIL`.
 - Include only hard-rule violations in `"blockers": [`.
 - Include changed or inspected paths in `"affected_files": [`.
-- Set `"suggested_next": {` to `/aif-rules` when rules should be added or clarified, `/aif-fix` when code must change, or `null` when no allowed next command fits.
-- Do not use `/aif-review` in the JSON `suggested_next.command`; it may appear only in human-readable workflow suggestions.
+- Set `"suggested_next": {` to `$aif-rules` when rules should be added or clarified, `$aif-fix` when code must change, or `null` when no allowed next command fits.
+- Do not use `$aif-review` in the JSON `suggested_next.command`; it may appear only in human-readable workflow suggestions.
 
 ```aif-gate-result
 {
@@ -196,7 +214,7 @@ Machine-readable gate result:
   "blockers": [],
   "affected_files": [],
   "suggested_next": {
-    "command": "/aif-rules",
+    "command": "$aif-rules",
     "reason": "Rules are missing or ambiguous for the changed scope."
   }
 }

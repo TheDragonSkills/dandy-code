@@ -105,7 +105,7 @@ Use them to keep outputs aligned with project conventions.
 
 **Read `.ai-factory/skill-context/aif-loop/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -376,9 +376,9 @@ After the loop stops (any reason):
 3. Ask user where to save the final artifact (default: keep it in `<resolved evolution dir>/<alias>/artifact.md`)
 4. Offer to copy artifact to a user-specified path
 5. Suggest next skills based on artifact type:
-   - API spec -> `/aif-plan` to implement it
-   - Code -> `/aif-verify` to check it
-   - Docs -> `/aif-docs` to integrate it
+   - API spec -> `$aif-plan` to implement it
+   - Code -> `$aif-verify` to check it
+   - Docs -> `$aif-docs` to integrate it
 6. Update `run.json.status` based on stop reason, and if `current.json` points to this loop, delete `current.json` (no active loop remains):
 
 | Stop reason | Status |
@@ -440,7 +440,7 @@ Recommend clearing context to the user in these situations:
 After the iteration summary, append:
 
 ```text
-💡 Context is growing. Recommended: /clear then /aif-loop resume
+💡 Context is growing. Recommended: /clear then $aif-loop resume
    All state is saved on disk — nothing will be lost.
 ```
 
@@ -481,14 +481,14 @@ If `run.json` is missing or unparseable:
 ## Examples
 
 ```text
-/aif-loop new OpenAPI 3.1 spec + DDD notes + JSON examples
-/aif-loop resume
-/aif-loop resume courses-api-ddd
-/aif-loop status
-/aif-loop stop
-/aif-loop list
-/aif-loop history
-/aif-loop history courses-api-ddd
-/aif-loop clean courses-api-ddd
-/aif-loop clean --all
+$aif-loop new OpenAPI 3.1 spec + DDD notes + JSON examples
+$aif-loop resume
+$aif-loop resume courses-api-ddd
+$aif-loop status
+$aif-loop stop
+$aif-loop list
+$aif-loop history
+$aif-loop history courses-api-ddd
+$aif-loop clean courses-api-ddd
+$aif-loop clean --all
 ```

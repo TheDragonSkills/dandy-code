@@ -1,6 +1,6 @@
 ---
 name: aif-rules
-description: Add project-specific rules and conventions to the configured RULES.md artifact. Each invocation appends new rules. These rules are automatically loaded by /aif-implement before execution. Use when user says "add rule", "remember this", "convention", or "always do X".
+description: Add project-specific rules and conventions to the configured RULES.md artifact. Each invocation appends new rules. These rules are automatically loaded by $aif-implement before execution. Use when user says "add rule", "remember this", "convention", or "always do X".
 argument-hint: "[rule text or topic]"
 allowed-tools: Read Write Edit Glob Grep AskUserQuestion Questions
 disable-model-invocation: true
@@ -8,19 +8,19 @@ disable-model-invocation: true
 
 # AI Factory Rules - Project Conventions
 
-Add short, actionable rules and conventions for the current project. Rules are saved to the configured RULES.md artifact (default: `.ai-factory/RULES.md`) and automatically loaded by `/aif-implement` before task execution.
+Add short, actionable rules and conventions for the current project. Rules are saved to the configured RULES.md artifact (default: `.ai-factory/RULES.md`) and automatically loaded by `$aif-implement` before task execution.
 
 ## Rules Hierarchy
 
 AI Factory supports a three-level rules hierarchy:
 
 1. **RULES.md** - Axioms (universal project rules)
-   - Managed by this skill (`/aif-rules`)
+   - Managed by this skill (`$aif-rules`)
    - Short, flat list of hard requirements
    - Loaded by all skills
 
 2. **rules/base.md** - Project-specific base conventions
-   - Created by `/aif` during project setup
+   - Created by `$aif` during project setup
    - Naming conventions, module boundaries, error handling patterns
    - Auto-detected from codebase analysis
 
@@ -48,7 +48,7 @@ If config.yaml doesn't exist, use defaults:
 
 **Read `.ai-factory/skill-context/aif-rules/SKILL.md`** - MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -80,7 +80,7 @@ Check $ARGUMENTS:
 User provided rule text as argument:
 
 ```text
-/aif-rules Always use DTO classes instead of arrays
+$aif-rules Always use DTO classes instead of arrays
 ```
 
 Skip to Step 2 with the provided text as the rule.
@@ -90,7 +90,7 @@ Skip to Step 2 with the provided text as the rule.
 No arguments provided:
 
 ```text
-/aif-rules
+$aif-rules
 ```
 
 Ask via AskUserQuestion:
@@ -111,8 +111,8 @@ Examples:
 User wants to create or update area-specific rules:
 
 ```text
-/aif-rules area:api
-/aif-rules area frontend
+$aif-rules area:api
+$aif-rules area frontend
 ```
 
 **Workflow:**
@@ -196,7 +196,7 @@ Glob: <resolved RULES.md path>
 ```markdown
 # Project Rules
 
-> Short, actionable rules and conventions for this project. Loaded automatically by /aif-implement.
+> Short, actionable rules and conventions for this project. Loaded automatically by $aif-implement.
 
 ## Rules
 

@@ -28,8 +28,8 @@ Use a two-layer learning model:
 2. **Skill-context rules** (`.ai-factory/skill-context/*`) are the compact, reusable output.
 
 Policy across workflow skills:
-- `/aif-evolve` is the primary raw-patch analyzer. It processes patches **incrementally** using a cursor.
-- `/aif-implement`, `/aif-fix`, and `/aif-improve` should prefer skill-context first; raw patches are fallback context only.
+- `$aif-evolve` is the primary raw-patch analyzer. It processes patches **incrementally** using a cursor.
+- `$aif-implement`, `$aif-fix`, and `$aif-improve` should prefer skill-context first; raw patches are fallback context only.
 - Force full re-analysis only when needed (e.g., reset cursor and rerun evolve).
 
 ## Critical: Never Edit Built-in Skills Directly
@@ -56,7 +56,7 @@ This is the ONLY correct target for built-in skill improvements. No exceptions.
 |--------------------|---------------------|
 | `plan`             | `aif-plan`          |
 | `aif-plan`         | `aif-plan`          |
-| `/aif-plan`        | `aif-plan`          |
+| `$aif-plan`        | `aif-plan`          |
 | `my-custom-skill`  | `my-custom-skill`   |
 
 Rule: first, strip any leading `/` from the argument. Then: if the argument does not start with `aif-` AND a skill named `aif-<argument>` exists — use `aif-<argument>`. Otherwise use as-is.
@@ -64,7 +64,7 @@ Rule: first, strip any leading `/` from the argument. Then: if the argument does
 **After resolving the skill name:** verify that the resolved skill actually exists
 (check `.agents/skills/<resolved-name>/SKILL.md` or `skills/<resolved-name>/SKILL.md`).
 If the skill is not found → report an error to the user and stop:
-"Skill '<resolved-name>' not found. Use `/aif-evolve` without arguments to evolve
+"Skill '<resolved-name>' not found. Use `$aif-evolve` without arguments to evolve
 all skills, or specify a valid skill name."
 
 **Determine which skills to evolve from `$ARGUMENTS`:**
@@ -98,11 +98,11 @@ If config.yaml doesn't exist, use defaults:
 
 **Read skill-context files for target skills:**
 
-- If evolving a **specific skill** (e.g., `/aif-evolve plan`) → read only:
+- If evolving a **specific skill** (e.g., `$aif-evolve plan`) → read only:
   1. `.ai-factory/skill-context/aif-plan/SKILL.md` (target skill's context)
   2. `.ai-factory/skill-context/aif-evolve/SKILL.md` (evolve's own context, if exists
      **and** target skill is not `aif-evolve` itself)
-- If evolving **all skills** (`/aif-evolve` or `/aif-evolve all`) → read all context files:
+- If evolving **all skills** (`$aif-evolve` or `$aif-evolve all`) → read all context files:
   `Glob: .ai-factory/skill-context/*/SKILL.md` (this already includes evolve's own context — do NOT read it separately)
 
 These contain previously accumulated project-specific rules for built-in skills.
@@ -156,7 +156,7 @@ Processing rules:
 4. If cursor file exists but referenced patch is missing (deleted/renamed) → emit `WARN [evolve]` and do a full rescan.
 5. Historical edits/deletes for patches older than cursor are not reliably detectable without a saved baseline (snapshot/hash manifest). Do NOT emit this warning by default.
 6. Emit `WARN [evolve]` for historical drift only when a reliable baseline exists and drift is actually detected.
-7. Full rescan procedure: delete `<resolved evolutions dir>/patch-cursor.json`, then run `/aif-evolve` again.
+7. Full rescan procedure: delete `<resolved evolutions dir>/patch-cursor.json`, then run `$aif-evolve` again.
 8. **Do not advance cursor in Step 1.1.** Cursor is updated only after successful apply/log write in Step 7.3.
 
 **Overlap window (anti-miss guard):**
@@ -212,15 +212,15 @@ Scan the project for patterns:
 - Import conventions, file structure
 
 **When evolving a specific skill**, focus convention scanning on areas relevant to that skill
-(e.g., for `/aif-plan` — focus on file structure and naming; for `/aif-fix` — error handling and testing).
+(e.g., for `$aif-plan` — focus on file structure and naming; for `$aif-fix` — error handling and testing).
 
 ### Step 2: Read Target Skills
 
 **Read ONLY the base SKILL.md files for target skills — not all skills.**
 
-- If evolving a **specific skill** (e.g., `/aif-evolve plan`) → read only that one:
+- If evolving a **specific skill** (e.g., `$aif-evolve plan`) → read only that one:
   `Read: .agents/skills/aif-plan/SKILL.md` (or `skills/aif-plan/SKILL.md` if not installed)
-- If evolving **all skills** (`/aif-evolve` or `/aif-evolve all`) → read all:
+- If evolving **all skills** (`$aif-evolve` or `$aif-evolve all`) → read all:
   `Glob: .agents/skills/*/SKILL.md` (or `Glob: skills/*/SKILL.md` if not installed)
 
 Keep loaded SKILL.md content in memory — Step 3 needs it for comparison (do NOT re-read).
@@ -290,20 +290,20 @@ they are outside of evolve's scope.
 
 For each stale rule, present:
 
-##### /aif-plan — Fully covered: [Rule Name]
+##### $aif-plan — Fully covered: [Rule Name]
 - **Base SKILL.md says:** [base rule text]
 - **Skill-context says:** [project rule text]
 - **Decision required:** Keep in skill-context (has priority over base — ensures
   the complete version is always applied) / Remove from skill-context (trust base) /
   Rewrite skill-context rule
 
-##### /aif-plan — Conflict: [Rule Name]
+##### $aif-plan — Conflict: [Rule Name]
 - **Base SKILL.md says:** [base rule text]
 - **Skill-context says:** [project rule text]
 - **Decision required:** Keep skill-context rule (has priority — base version will
   be ignored) / Remove skill-context rule (trust base) / Rewrite skill-context rule
 
-##### /aif-fix — Partial overlap: [Rule Name]
+##### $aif-fix — Partial overlap: [Rule Name]
 - **Base SKILL.md says:** [base rule text]
 - **Skill-context says:** [project rule text]
 - **Analysis:** [explain overlap and whether parts are independent or sequential]
@@ -415,7 +415,7 @@ Based on:
 
 ### Proposed Improvements
 
-#### /aif-fix (N rules)
+#### $aif-fix (N rules)
 **Target:** `.ai-factory/skill-context/aif-fix/SKILL.md`
 
 1. **Add null-check guard**
@@ -428,7 +428,7 @@ Based on:
    - **Why:** Unhandled promise rejections in API layer
    - **Rule:** "Always use try/catch with async/await"
 
-#### /aif-implement (N rules)
+#### $aif-implement (N rules)
 **Target:** `.ai-factory/skill-context/aif-implement/SKILL.md`
 
 1. **Add Prisma-specific warning**
@@ -498,7 +498,7 @@ For each approved improvement, determine the target:
 ```
 # Project Rules for /<skill-name>
 
-> Auto-generated by `/aif-evolve`. Do not edit manually.
+> Auto-generated by `$aif-evolve`. Do not edit manually.
 > Last updated: YYYY-MM-DD HH:mm
 > Based on: N analyzed patches
 
@@ -571,10 +571,10 @@ Improvements applied: Y
 
 ### Recommendations
 
-1. **Run `/aif-review`** on recent code to verify improvements
-2. **Next evolution** — run `/aif-evolve` again after 5-10 more fixes
+1. **Run `$aif-review`** on recent code to verify improvements
+2. **Next evolution** — run `$aif-evolve` again after 5-10 more fixes
 3. **Consider new skill** — if pattern X keeps recurring, create a dedicated skill:
-   `/aif-skill-generator <skill-name>`
+   `$aif-skill-generator <skill-name>`
 ```
 
 ### Context Cleanup
@@ -598,7 +598,7 @@ After completing evolution, suggest `/clear` or `/compact` — context is heavy 
 7. **Skill-context only** — all improvements for built-in `aif-*` skills go to `.ai-factory/skill-context/`, never to `skills/aif-*/`. **NEVER edit any files inside `skills/aif-*/`** — they are overwritten on update. No exceptions.
 8. **English only** — all skill-context files must be written in English, regardless of user's language
 9. **No generic advice** — "write clean code" is not an improvement; only project-specific enhancements
-10. **No new skills** — suggest `/aif-skill-generator` instead
+10. **No new skills** — suggest `$aif-skill-generator` instead
 11. **No losing coverage** — do not remove rules unless they are stale (Steps 3-4).
     Merges in Step 7 (combining narrow rules into a broader one) are allowed as long
     as all prevention points are preserved in the merged rule.
@@ -608,10 +608,10 @@ After completing evolution, suggest `/clear` or `/compact` — context is heavy 
 ## Example
 
 ```
-/aif-evolve fix
+$aif-evolve fix
 
 → Found 6/10 patches tagged #null-check
-→ Improvement for /aif-fix (2 rules):
+→ Improvement for $aif-fix (2 rules):
   Target: .ai-factory/skill-context/aif-fix/SKILL.md
   1. "PRIORITY CHECK: Look for optional/nullable fields accessed
       without null guards. This is the #1 source of bugs in this project."

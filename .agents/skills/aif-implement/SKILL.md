@@ -51,6 +51,12 @@ Handoff sync is handled inline — see **Step 0.2** (after reading the plan file
    - `paths.rules`
    - `language.ui`, `language.artifacts`
    - `git.enabled`, `git.base_branch`, `git.create_branches`
+   - `workflow.plan_id_format` (default: `slug`) — used by branch-based plan discovery.
+     Active values: `slug` and `sequential`. When `sequential`, the resolver
+     globs `<paths.plans>/[0-9]{4}_<branch-slug>.md` first and falls back to
+     `<paths.plans>/<branch-slug>.md` only if no numbered match is found.
+     `timestamp` and `uuid` are **reserved values** and currently behave like `slug`.
+     Treat any unknown value as `slug`.
    - `rules.base` plus any named `rules.<area>` entries
 2. Parse arguments:
    - --list → list available plans only (no implementation; STOP)
@@ -72,7 +78,10 @@ If `$ARGUMENTS` contains `--list`, run read-only plan discovery and stop.
    git branch --show-current (git mode only)
 2. Convert branch to filename: replace "/" with "-", add ".md" (git mode only)
 3. Check existence of:
-   - <configured plans dir>/<branch-name>.md (git mode only)
+   - <configured plans dir>/<branch-name>.md (git mode only, default `plan_id_format`)
+   - when `workflow.plan_id_format = sequential`: also glob
+     `<configured plans dir>/[0-9][0-9][0-9][0-9]_<branch-name-without-.md>.md`;
+     report all matches (highest-numbered first)
    - if git mode is off or branch creation is disabled: any `*.md` full-mode plan in `<configured plans dir>/`
    - <resolved fast plan path>
    - <resolved fix plan path>
@@ -92,7 +101,7 @@ For detailed output format and examples, see:
 
 ### Step 0.inline: Inline Implementation Mode (`--without-plan`)
 
-If `$ARGUMENTS` contains `--without-plan`, execute a single scoped task from the description WITHOUT creating or reading any plan file. This is the lightweight path for small `feat`/`chore` tasks that do not justify a full plan but are not bug fixes either (use `/aif-fix` for bugs).
+If `$ARGUMENTS` contains `--without-plan`, execute a single scoped task from the description WITHOUT creating or reading any plan file. This is the lightweight path for small `feat`/`chore` tasks that do not justify a full plan but are not bug fixes either (use `$aif-fix` for bugs).
 
 **Argument parsing:**
 
@@ -101,7 +110,7 @@ If `$ARGUMENTS` contains `--without-plan`, execute a single scoped task from the
 2. docs_policy = value of `--docs=yes|no|warn` if present, else `warn` (default).
 3. Validation:
    - description is empty →
-     ERROR: "Usage: /aif-implement --without-plan <description> [--docs=yes|no|warn]"
+     ERROR: "Usage: $aif-implement --without-plan <description> [--docs=yes|no|warn]"
      → STOP
    - arguments also contain `@<path>`, `status`, or a bare task id number →
      ERROR: "`--without-plan` is mutually exclusive with @plan-file, status, and task id."
@@ -117,7 +126,7 @@ Before executing, assess the description. If it looks too broad for a one-shot i
 
 ```
 Description looks too broad for inline implementation. Recommended:
-  /aif-plan fast <description>
+  $aif-plan fast <description>
 ```
 
 → STOP.
@@ -128,7 +137,8 @@ Small, focused descriptions (e.g. "add GET /healthz returning 200 with {status:\
 
 Inline mode ignores plan files by design. If any of these exist on disk, emit a `WARN [inline]` line so the user notices the intentional skip (do NOT read them, do NOT redirect):
 
-- `<configured plans dir>/<branch>.md` (git mode only)
+- `<configured plans dir>/<branch>.md` (git mode only) — or
+  `<configured plans dir>/[0-9]{4}_<branch>.md` when `workflow.plan_id_format = sequential`
 - resolved fast plan path (`paths.plan`)
 - resolved fix plan path (`paths.fix_plan`)
 
@@ -152,13 +162,13 @@ Use the resolved config from Step 0:
 2. Read only files relevant to the described scope
 3. Apply changes following existing code patterns and skill-context rules
 4. Apply verbose logging per `references/LOGGING-GUIDE.md`
-5. Do not add tests by default. Add them only if the description explicitly requests tests (e.g. "with tests", "add tests for X") OR if existing project conventions / touched code paths clearly require them (e.g. a test file mirrors every source file in the area being changed, or a RULES.md / skill-context rule mandates test coverage for this kind of change). When in doubt, prefer NO tests and let the user follow up via `/aif-plan` if wider test coverage is needed.
+5. Do not add tests by default. Add them only if the description explicitly requests tests (e.g. "with tests", "add tests for X") OR if existing project conventions / touched code paths clearly require them (e.g. a test file mirrors every source file in the area being changed, or a RULES.md / skill-context rule mandates test coverage for this kind of change). When in doubt, prefer NO tests and let the user follow up via `$aif-plan` if wider test coverage is needed.
 6. Verify the change compiles/runs and the described behavior works
 
 **Prohibited in inline mode:**
 
 - Do NOT create or read `paths.plan` / `paths.plans/*` / `paths.fix_plan`.
-- Do NOT invoke `/aif-plan` or `/aif-fix`.
+- Do NOT invoke `$aif-plan` or `$aif-fix`.
 - Do NOT create entries under `paths.patches` (no `[FIX]` self-improvement patch — this is not a bugfix flow).
 - Do NOT call `TaskList` / `TaskGet` / `TaskUpdate` (no plan = no persisted tasks).
 - Do NOT search for or modify plan checkboxes on disk.
@@ -195,7 +205,7 @@ If `HANDOFF_TASK_ID` is missing → skip all MCP sync for this run.
 
 **Docs policy (inline mode, driven by `--docs`):**
 
-- `--docs=yes` → after completion, show the docs checkpoint (same AskUserQuestion as `Docs: yes` in regular mode) and route changes through `/aif-docs`.
+- `--docs=yes` → after completion, show the docs checkpoint (same AskUserQuestion as `Docs: yes` in regular mode) and route changes through `$aif-docs`.
 - `--docs=no` → suppress the documentation checkpoint, emit `WARN [docs] --docs=no in inline mode; documentation checkpoint skipped`.
 - `--docs=warn` (default) → emit `WARN [docs] Inline mode default is warn-only; documentation checkpoint skipped. Pass --docs=yes to enable.`
 
@@ -219,8 +229,8 @@ Documentation: <outcome per --docs>
 
 What's next?
 
-1. 🔍 /aif-verify — Verify the change (recommended)
-2. 💾 /aif-commit — Commit directly
+1. 🔍 $aif-verify — Verify the change (recommended)
+2. 💾 $aif-commit — Commit directly
 ```
 
 Then offer:
@@ -229,8 +239,8 @@ Then offer:
 AskUserQuestion: Inline task complete. What's next?
 
 Options:
-1. Verify first — Run /aif-verify (recommended)
-2. Skip to commit — Go straight to /aif-commit
+1. Verify first — Run $aif-verify (recommended)
+2. Skip to commit — Go straight to $aif-commit
 ```
 
 → **STOP** after the chosen follow-up completes. No summary document, no report file.
@@ -268,31 +278,31 @@ Then reconcile plan/task state:
 AskUserQuestion: You have uncommitted changes. Commit them first?
 
 Options:
-1. Yes, commit now (/aif-commit)
+1. Yes, commit now ($aif-commit)
 2. No, stash and continue
 3. Cancel
 ```
 
 **Based on choice:**
 
-- Yes → run `/aif-commit`, then continue to plan discovery
+- Yes → run `$aif-commit`, then continue to plan discovery
 - No → `git stash push -m "aif-implement: stash before plan execution"`, then continue
 - Cancel → inform the user: "Implementation cancelled." → **STOP**
 
 **If NO plan file exists but the resolved fix plan exists:**
 
-A fix plan was created by `/aif-fix` in plan mode. Redirect to fix workflow:
+A fix plan was created by `$aif-fix` in plan mode. Redirect to fix workflow:
 
 ```
 Found a fix plan at the resolved fix plan path.
 
-This plan was created by /aif-fix and should be executed through the fix workflow
+This plan was created by $aif-fix and should be executed through the fix workflow
 (it creates a patch and handles cleanup automatically).
 
-Running /aif-fix to execute the plan...
+Running $aif-fix to execute the plan...
 ```
 
-→ **Invoke `/aif-fix`** (without arguments – it will detect the resolved fix plan and execute it).
+→ **Invoke `$aif-fix`** (without arguments – it will detect the resolved fix plan and execute it).
 → **STOP** — do not continue with implement workflow.
 
 **If NO plan file exists AND no resolved fix plan (all tasks completed or fresh start):**
@@ -310,15 +320,15 @@ Options:
 
 **Based on choice:**
 
-- New feature from current → `/aif-plan full <description>`
-- Return to base branch → `git checkout <configured-base-branch>`, then `git pull origin <configured-base-branch>` → `/aif-plan full <description>` (git mode only)
-- Quick task → `/aif-plan fast <description>`
+- New feature from current → `$aif-plan full <description>`
+- Return to base branch → `git checkout <configured-base-branch>`, then `git pull origin <configured-base-branch>` → `$aif-plan full <description>` (git mode only)
+- Quick task → `$aif-plan fast <description>`
 - Nothing, just checking status → display branch info and recent commits summary → **STOP**
 
 If `git.enabled = false`, replace option 2 with:
 
 - `2. Create rich full plan without branch creation`
-- Route it to `/aif-plan full <description>` without any git commands
+- Route it to `$aif-plan full <description>` without any git commands
 
 **If plan file exists → continue to Step 0.1**
 
@@ -359,7 +369,7 @@ Load all available rule files and merge them. More specific rules override gener
 
 **Read `.ai-factory/skill-context/aif-implement/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -407,11 +417,11 @@ Use this explicit plan file and skip automatic plan discovery.
 3. If file does not exist:
    "Plan file not found: <path>
     Provide an existing markdown plan file, for example:
-    - /aif-implement @<resolved fast plan path>
-    - /aif-implement @.ai-factory/plans/feature-user-auth.md"
+    - $aif-implement @<resolved fast plan path>
+    - $aif-implement @.ai-factory/plans/feature-user-auth.md"
    → STOP
 4. If file is the resolved fix plan path:
-   → invoke /aif-fix (ownership + cleanup workflow) and STOP
+   → invoke $aif-fix (ownership + cleanup workflow) and STOP
 5. Otherwise use this file as the active plan
 ```
 
@@ -424,24 +434,32 @@ Then continue with normal execution using the selected plan file.
 ```
 1. Check current git branch:
    git branch --show-current
-   → Convert branch name to filename: replace "/" with "-", add ".md"
-   → Look for <configured plans dir>/<branch-name>.md
-2. If git mode is off or branch-based plan is missing:
-   - Check whether the configured plans dir contains exactly one `*.md` plan file created by `/aif-plan full` without a branch
+   → Convert branch name to filename: replace "/" with "-" (this is <branch-slug>)
+   → Resolve full-mode plan filename in this order:
+     a. When `workflow.plan_id_format = sequential`, glob
+        `<configured plans dir>/[0-9][0-9][0-9][0-9]_<branch-slug>.md`.
+        - 0 matches → fall through to step (b).
+        - 1 match → use it.
+        - >1 matches → use the **highest-numbered** match and emit
+          `WARN [aif-implement] multiple sequential plans for <branch>: <list>; using <chosen>`.
+     b. `<configured plans dir>/<branch-slug>.md` (default behavior, also used as
+        the fallback when sequential glob returned 0 matches).
+2. If git mode is off or no branch-based plan is found above:
+   - Check whether the configured plans dir contains exactly one `*.md` plan file created by `$aif-plan full` without a branch
    - If exactly one exists → use it
    - If multiple exist → ask the user to choose or use `@<path>`
 3. No full-mode plan → Check the resolved fast plan path
 4. No full-mode plan and no resolved fast plan → Check the resolved fix plan path
-   → If exists: invoke /aif-fix (handles its own workflow with patches) and STOP
+   → If exists: invoke $aif-fix (handles its own workflow with patches) and STOP
 ```
 
 **Priority:**
 
 1. `@<path>` argument - explicit user-selected plan file
-2. Branch-named file (from `/aif-plan full`) - if it matches current branch
-3. Single named full-plan file in `paths.plans` (from `/aif-plan full` without branch creation)
-4. `paths.plan` (from `/aif-plan fast`) - fallback when no full plan exists
-5. `paths.fix_plan` - redirect to `/aif-fix` (from `/aif-fix` plan mode)
+2. Branch-named file (from `$aif-plan full`) - if it matches current branch
+3. Single named full-plan file in `paths.plans` (from `$aif-plan full` without branch creation)
+4. `paths.plan` (from `$aif-plan fast`) - fallback when no full plan exists
+5. `paths.fix_plan` - redirect to `$aif-fix` (from `$aif-fix` plan mode)
 
 **Read the plan file** to understand:
 
@@ -579,16 +597,16 @@ If the plan has commit checkpoints and current task is at a checkpoint:
 AskUserQuestion: ✅ Tasks <first>-<last> completed. This is a commit checkpoint. Ready to commit? Suggested message: "<conventional commit message>"
 
 Options:
-1. Yes, commit now (/aif-commit)
+1. Yes, commit now ($aif-commit)
 2. No, continue to next task
 3. Skip all commit checkpoints
 ```
 
 **Based on choice:**
 
-- Yes, commit now → invoke `/aif-commit` with the suggested message, then continue to next task
+- Yes, commit now → invoke `$aif-commit` with the suggested message, then continue to next task
 - No, continue to next task → proceed to the next task without committing
-- Skip all commit checkpoints → for all subsequent checkpoints within this `/aif-implement` run, skip the prompt automatically and proceed directly to the next task (as if user selected "No, continue to next task" each time). This is in-context memory — resets on `/clear` or new session
+- Skip all commit checkpoints → for all subsequent checkpoints within this `$aif-implement` run, skip the prompt automatically and proceed directly to the next task (as if user selected "No, continue to next task" each time). This is in-context memory — resets on `/clear` or new session
 
 **3.9: Move to next task or pause**
 
@@ -605,13 +623,13 @@ Completed: 4/8 tasks
 Next task: #5 - Add pagination support
 
 To resume later, run:
-/aif-implement
+$aif-implement
 ```
 
 **To resume (next session):**
 
 ```
-/aif-implement
+$aif-implement
 ```
 
 → Automatically finds next incomplete task
@@ -640,8 +658,8 @@ Documentation: updated existing docs | created docs/<feature-slug>.md | skipped 
 
 What's next?
 
-1. 🔍 /aif-verify — Verify nothing was missed (recommended)
-2. 💾 /aif-commit — Commit the changes directly
+1. 🔍 $aif-verify — Verify nothing was missed (recommended)
+2. 💾 $aif-commit — Commit the changes directly
 ```
 
 **Check ROADMAP.md progress:**
@@ -672,14 +690,14 @@ Only do this step when there is something concrete to capture.
 
 - This command may mark milestone completion when evidence is clear.
 - If milestone mapping is ambiguous, emit `WARN [roadmap] ...` and suggest the owner command:
-    - `/aif-roadmap check`
-    - or `/aif-roadmap <short update request>`
+    - `$aif-roadmap check`
+    - or `$aif-roadmap <short update request>`
 
 **RULES.md (NOT allowed in this command):**
 
-- Never edit the resolved `paths.rules_file` artifact from `/aif-implement`.
-- If you discovered repeatable conventions/pitfalls during implementation, propose up to 3 candidate rules and ask the user to add them via `/aif-rules`.
-- Do not invoke `/aif-rules` automatically (it is user-invoked).
+- Never edit the resolved `paths.rules_file` artifact from `$aif-implement`.
+- If you discovered repeatable conventions/pitfalls during implementation, propose up to 3 candidate rules and ask the user to add them via `$aif-rules`.
+- Do not invoke `$aif-rules` automatically (it is user-invoked).
 
 If candidate rules exist:
 
@@ -687,7 +705,7 @@ If candidate rules exist:
 AskUserQuestion: Capture new project rules in the resolved RULES.md artifact?
 
 Options:
-1. Yes — output `/aif-rules ...` commands (recommended)
+1. Yes — output `$aif-rules ...` commands (recommended)
 2. No — skip
 ```
 
@@ -701,21 +719,21 @@ If plan setting is `Docs: yes`:
 AskUserQuestion: Documentation checkpoint — how should we document this feature?
 
 Options:
-1. Update existing docs (recommended) — invoke /aif-docs
-2. Create a new feature doc page — invoke /aif-docs with feature-page context
+1. Update existing docs (recommended) — invoke $aif-docs
+2. Create a new feature doc page — invoke $aif-docs with feature-page context
 3. Skip documentation
 ```
 
 Handling:
 
-- Option 1 → invoke `/aif-docs` to update README/docs based on completed work
-- Option 2 → invoke `/aif-docs` with context to create `docs/<feature-slug>.md`, include sections (Summary, Usage/user-facing behavior, Configuration, API/CLI changes, Examples, Troubleshooting, See Also), and add a README docs-table link
-- Option 3 → do not invoke `/aif-docs`; emit `WARN [docs] Documentation skipped by user`
+- Option 1 → invoke `$aif-docs` to update README/docs based on completed work
+- Option 2 → invoke `$aif-docs` with context to create `docs/<feature-slug>.md`, include sections (Summary, Usage/user-facing behavior, Configuration, API/CLI changes, Examples, Troubleshooting, See Also), and add a README docs-table link
+- Option 3 → do not invoke `$aif-docs`; emit `WARN [docs] Documentation skipped by user`
 
 If plan setting is `Docs: no` or setting is unset:
 
 - Do **not** show a mandatory docs checkpoint prompt
-- Do **not** invoke `/aif-docs` automatically
+- Do **not** invoke `$aif-docs` automatically
 - Emit `WARN [docs] Docs policy is no/unset; skipping documentation checkpoint`
 
 **Always include documentation outcome in the final completion output:**
@@ -727,7 +745,7 @@ If plan setting is `Docs: no` or setting is unset:
 
 **Handle plan file after completion:**
 
-- **If the resolved fast plan path** (from `/aif-plan fast`):
+- **If the resolved fast plan path** (from `$aif-plan fast`):
 
   ```
   AskUserQuestion: Would you like to delete the resolved fast plan file? (It's no longer needed)
@@ -781,12 +799,12 @@ Options:
   To merge and clean up later:
     cd <main-repo-path>
     git merge <branch>
-    /aif-plan --cleanup <branch>
+    $aif-plan --cleanup <branch>
   ```
 
 #### Worktree Merge
 
-1. **Ensure everything is committed** — check `git status`. If uncommitted changes exist, suggest `/aif-commit` first and wait.
+1. **Ensure everything is committed** — check `git status`. If uncommitted changes exist, suggest `$aif-commit` first and wait.
 
 2. **Get repository root path:**
 
@@ -846,14 +864,14 @@ Options:
 AskUserQuestion: All tasks complete. What's next?
 
 Options:
-1. Verify first — Run /aif-verify to check completeness (recommended)
-2. Skip to commit — Go straight to /aif-commit
+1. Verify first — Run $aif-verify to check completeness (recommended)
+2. Skip to commit — Go straight to $aif-commit
 ```
 
 **Based on choice:**
 
-- "Verify first" → invoke `/aif-verify` → after it completes, continue to context cleanup below
-- "Skip to commit" → invoke `/aif-commit` → after it completes, continue to context cleanup below
+- "Verify first" → invoke `$aif-verify` → after it completes, continue to context cleanup below
+- "Skip to commit" → invoke `$aif-commit` → after it completes, continue to context cleanup below
 
 **Context cleanup (after verify or commit):**
 
@@ -866,7 +884,7 @@ Suggest the user to free up context space if needed: `/clear` (full reset) or `/
 ### Start/Resume Implementation
 
 ```
-/aif-implement
+$aif-implement
 ```
 
 Continues from next incomplete task.
@@ -874,16 +892,16 @@ Continues from next incomplete task.
 ### List Available Plans
 
 ```
-/aif-implement --list
+$aif-implement --list
 ```
 
-Lists the resolved fast plan path, resolved fix plan path, and current-branch `<configured plans dir>/<branch>.md` (if present), then exits without implementation.
+Lists the resolved fast plan path, resolved fix plan path, and current-branch `<configured plans dir>/<branch>.md` (or `<configured plans dir>/<NNNN>_<branch>.md` when `workflow.plan_id_format = sequential`), then exits without implementation.
 
 ### Use Explicit Plan File
 
 ```
-/aif-implement @my-custom-plan.md
-/aif-implement @.ai-factory/plans/feature-user-auth.md status
+$aif-implement @my-custom-plan.md
+$aif-implement @.ai-factory/plans/feature-user-auth.md status
 ```
 
 Uses the provided plan file instead of auto-detecting by branch/default files.
@@ -891,8 +909,8 @@ Uses the provided plan file instead of auto-detecting by branch/default files.
 ### Inline Implementation (No Plan)
 
 ```
-/aif-implement --without-plan add GET /healthz endpoint returning {"status":"ok"}
-/aif-implement --without-plan rename LogLevel.VERBOSE to LogLevel.TRACE --docs=yes
+$aif-implement --without-plan add GET /healthz endpoint returning {"status":"ok"}
+$aif-implement --without-plan rename LogLevel.VERBOSE to LogLevel.TRACE --docs=yes
 ```
 
 One-shot execution of a small task without any plan file. Mutually exclusive with `@plan-file`, `status`, and task id. Does not create `FIX_PLAN.md` or patches. Default docs policy is `warn`; pass `--docs=yes` to run the docs checkpoint, `--docs=no` to silence the warning. See **Step 0.inline** for the full flow.
@@ -900,7 +918,7 @@ One-shot execution of a small task without any plan file. Mutually exclusive wit
 ### Start from Specific Task
 
 ```
-/aif-implement 5
+$aif-implement 5
 ```
 
 Starts from task #5 (useful for skipping or re-doing).
@@ -908,7 +926,7 @@ Starts from task #5 (useful for skipping or re-doing).
 ### Check Status Only
 
 ```
-/aif-implement status
+$aif-implement status
 ```
 
 Shows progress without executing.
@@ -921,7 +939,7 @@ Shows progress without executing.
 - ✅ Mark tasks in_progress before starting
 - ✅ Mark tasks completed after finishing
 - ✅ Follow existing code conventions
-- ✅ Follow `/aif-best-practices` guidelines (naming, structure, error handling)
+- ✅ Follow `$aif-best-practices` guidelines (naming, structure, error handling)
 - ✅ Create files mentioned in task description
 - ✅ Handle edge cases mentioned in task
 - ✅ Stop and ask if task is unclear

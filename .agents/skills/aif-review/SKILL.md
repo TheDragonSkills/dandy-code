@@ -115,7 +115,7 @@ Human gate result severity:
 - `WARN` for non-blocking inconsistencies or missing optional files.
 - `ERROR` only for explicit blocking criteria requested by the user/review policy.
 
-If the user wants a standalone rules-only pass, suggest `/aif-rules-check`. Keep human `/aif-review` gate labels at `WARN` / `ERROR`, then append the standard machine-readable gate result with `pass|warn|fail` status.
+If the user wants a standalone rules-only pass, suggest `$aif-rules-check`. Keep human `$aif-review` gate labels at `WARN` / `ERROR`, then append the standard machine-readable gate result with `pass|warn|fail` status.
 
 Machine-readable gate result:
 - Append one final fenced `aif-gate-result` JSON block after the human-readable review.
@@ -127,15 +127,15 @@ Machine-readable gate result:
 - Use `"blocking": true|false`.
 - Include merge-blocking review findings only in `"blockers": [`.
 - Include reviewed or implicated paths in `"affected_files": [`.
-- Set `"suggested_next": {` to `/aif-fix`, `/aif-rules`, `/aif-architecture`, `/aif-roadmap`, `/aif-commit`, or `null`.
+- Set `"suggested_next": {` to `$aif-fix`, `$aif-rules`, `$aif-architecture`, `$aif-roadmap`, `$aif-commit`, or `null`.
 
-`/aif-review` is read-only for context artifacts by default. Do not modify context files unless user explicitly asks.
+`$aif-review` is read-only for context artifacts by default. Do not modify context files unless user explicitly asks.
 
 ### Project Context
 
 **Read `.ai-factory/skill-context/aif-review/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -227,7 +227,7 @@ Append the final machine-readable result after the markdown summary:
   "blockers": [],
   "affected_files": [],
   "suggested_next": {
-    "command": "/aif-commit",
+    "command": "$aif-commit",
     "reason": "Review found no blocking issues."
   }
 }
@@ -246,22 +246,22 @@ Schema reminder: `"status": "pass|warn|fail"`, `"blocking": true|false`, `"block
 
 ## Examples
 
-**User:** `/aif-review`
+**User:** `$aif-review`
 Review staged changes in current repository.
 
-**User:** `/aif-review 123`
+**User:** `$aif-review 123`
 Review PR #123 using GitHub CLI.
 
-**User:** `/aif-review https://github.com/org/repo/pull/123`
+**User:** `$aif-review https://github.com/org/repo/pull/123`
 Review PR from URL.
 
-**User:** `/aif-review 2.x`
+**User:** `$aif-review 2.x`
 Review all commits on the current branch compared to branch `2.x`.
 
-**User:** `/aif-review main`
+**User:** `$aif-review main`
 Review all commits on the current branch compared to `main` (or to whatever branch is configured as `git.base_branch` in this repository).
 
-**User:** `/aif-review v1.0.0`
+**User:** `$aif-review v1.0.0`
 Review all commits on the current branch compared to tag `v1.0.0`.
 
 ## Integration

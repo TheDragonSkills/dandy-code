@@ -32,7 +32,7 @@ If config.yaml doesn't exist, use defaults:
 
 **Read `.ai-factory/skill-context/aif-reference/SKILL.md`** - MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -50,7 +50,7 @@ If any rule is violated - fix the output before presenting it to the user.
 
 - AI needs documentation it was not trained on or may know only partially
 - You want grounded answers based on specific docs, specs, or internal files
-- You want reusable domain context for `/aif-plan`, `/aif-implement`, `/aif-explore`, or `/aif-grounded`
+- You want reusable domain context for `$aif-plan`, `$aif-implement`, `$aif-explore`, or `$aif-grounded`
 - You want a durable knowledge artifact instead of one-off conversation context
 
 ## Argument Detection
@@ -218,16 +218,16 @@ When `--update` is present:
 
 ## List / Show / Delete
 
-- **`/aif-reference list`** - read and display `<resolved references dir>/INDEX.md` or list files in the directory
-- **`/aif-reference show <name>`** - read and display the reference content (`.md` is optional)
-- **`/aif-reference delete <name>`** - ask for confirmation, delete the file, and update `INDEX.md`
+- **`$aif-reference list`** - read and display `<resolved references dir>/INDEX.md` or list files in the directory
+- **`$aif-reference show <name>`** - read and display the reference content (`.md` is optional)
+- **`$aif-reference delete <name>`** - ask for confirmation, delete the file, and update `INDEX.md`
 
 ## Integration With Other Skills
 
 References in the resolved references directory are available to all AI Factory skills:
-- `/aif-plan` and `/aif-implement` can read them for domain context
-- `/aif-grounded` can use them as evidence sources
-- `/aif-explore` can reference them during research
+- `$aif-plan` and `$aif-implement` can read them for domain context
+- `$aif-grounded` can use them as evidence sources
+- `$aif-explore` can reference them during research
 
 To make a skill aware of a specific reference, mention it in the resolved RULES.md file:
 

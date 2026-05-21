@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Enter explore mode. Think deeply. Visualize freely. Follow the conversation wherever it goes.
 
-**IMPORTANT: Explore mode is for thinking, not implementing.** You may read files, search code, and investigate the codebase, but you must NEVER implement features or modify project code. If the user asks to implement something, remind them to exit explore mode first (e.g., start with `/aif-plan`). If the user asks to persist exploration context, write/edit **only** the resolved research path (default: `.ai-factory/RESEARCH.md`) - this is capturing thinking, not implementing.
+**IMPORTANT: Explore mode is for thinking, not implementing.** You may read files, search code, and investigate the codebase, but you must NEVER implement features or modify project code. If the user asks to implement something, remind them to exit explore mode first (e.g., start with `$aif-plan`). If the user asks to persist exploration context, write/edit **only** the resolved research path (default: `.ai-factory/RESEARCH.md`) - this is capturing thinking, not implementing.
 
 ---
 
@@ -17,10 +17,17 @@ Enter explore mode. Think deeply. Visualize freely. Follow the conversation wher
 **FIRST:** Read `.ai-factory/config.yaml` if it exists to resolve:
 - **Paths:** `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.research`, `paths.plan`, `paths.plans`, and `paths.rules`
 - **Language:** `language.ui` for communication
+- **Workflow:** `workflow.plan_id_format` (default: `slug`) — used by the optional active-plan-context lookup when explore mode references an existing plan for the current branch.
+  Active values: `slug` and `sequential`. When `sequential`, glob
+  `<paths.plans>/[0-9]{4}_<branch_stem>.md` first and fall back to
+  `<paths.plans>/<branch_stem>.md` only if no numbered match is found.
+  `timestamp` and `uuid` are **reserved values** and currently behave like `slug`.
+  Treat any unknown value as `slug`.
 
 If config.yaml doesn't exist, use defaults:
 - Paths: `.ai-factory/` for all artifacts
 - Language: `en` (English)
+- `workflow.plan_id_format`: `slug`
 
 **This is a stance, not a workflow.** There are no fixed steps, no required sequence, no mandatory outputs. You're a thinking partner helping the user explore.
 
@@ -98,7 +105,7 @@ You have access to AI Factory's project context. Use it naturally, don't force i
 
 **Read `.ai-factory/skill-context/aif-explore/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -125,7 +132,13 @@ At the start, read these files if present:
 - the resolved RULES.md path – project conventions and rules
 - the resolved RESEARCH.md path – persisted exploration notes (so you can `/clear` and still keep context)
 - the resolved fast plan path – active fast plan (if any)
-- `<configured plans dir>/<branch>.md` – active full plans (if any)
+- `<configured plans dir>/<branch_stem>.md` – active full plans (if any).
+  Compute `branch_stem` as `git branch --show-current` with every `/` replaced by `-`
+  (for example `feature/user-auth` → `feature-user-auth`).
+  When `workflow.plan_id_format = sequential`, glob first
+  `<configured plans dir>/[0-9][0-9][0-9][0-9]_<branch_stem>.md` and pick the
+  highest-numbered match; fall back to `<configured plans dir>/<branch_stem>.md`
+  when no numbered match exists.
 - the resolved ROADMAP.md path – strategic milestones (if any)
 
 This tells you:
@@ -136,7 +149,7 @@ This tells you:
 
 ### Input handling
 
-The argument after `/aif-explore` can be:
+The argument after `$aif-explore` can be:
 - A vague idea: "real-time collaboration"
 - A specific problem: "the auth system is getting unwieldy"
 - A plan name: to explore in context of `.ai-factory/plans/<name>.md`
@@ -147,7 +160,7 @@ The argument after `/aif-explore` can be:
 
 Think freely. When insights crystallize, you might offer:
 
-- "This feels solid enough to plan. Want me to start `/aif-plan`?"
+- "This feels solid enough to plan. Want me to start `$aif-plan`?"
 - Or keep exploring - no pressure to formalize
 
 ### When a plan exists
@@ -156,7 +169,12 @@ If the user mentions a plan or you detect one is relevant:
 
 1. **Read existing plan for context**
    - the resolved fast plan path (fast mode)
-   - `<configured plans dir>/<branch>.md` (full mode)
+   - `<configured plans dir>/<branch_stem>.md` (full mode, default).
+     `branch_stem` = `git branch --show-current` with every `/` replaced by `-`
+     (so `feature/user-auth` resolves to `feature-user-auth`).
+     When `workflow.plan_id_format = sequential`, the filename is
+     `<configured plans dir>/<NNNN>_<branch_stem>.md`; pick the highest-numbered
+     match if more than one exists.
 
 2. **Reference it naturally in conversation**
    - "Your plan mentions adding Redis, but we just realized SQLite fits better..."
@@ -175,7 +193,7 @@ If the user mentions a plan or you detect one is relevant:
    | Strategic direction | `paths.research` | `paths.roadmap` |
    | Assumption invalidated | `paths.research` | Relevant file |
    | Exploration context (persisted) | `paths.research` | (keep in research) |
-   | New task/feature | Run `/aif-plan` | `paths.plan` or `paths.plans/<branch-or-slug>.md` |
+   | New task/feature | Run `$aif-plan` | `paths.plan` or `paths.plans/<branch_stem-or-slug>.md` (or `paths.plans/<NNNN>_<branch_stem-or-slug>.md` under `plan_id_format: sequential`; `branch_stem` = current branch with `/` replaced by `-`) |
 
    Example offers:
    - "Want me to save this to the resolved research path so you can `/clear` and come back later?"
@@ -192,7 +210,7 @@ If the conversation is crystallizing (you're about to plan, you want to `/clear`
 Ask:
 
 ```
-Save these exploration results to the resolved research path so we can /clear and /aif-plan can reuse them?
+Save these exploration results to the resolved research path so we can /clear and $aif-plan can reuse them?
 
 Options:
 1. Yes — update Active Summary + append a new Session (recommended)
@@ -210,7 +228,7 @@ If user selects (1) or (2):
 Updated: YYYY-MM-DD HH:MM
 Status: active
 
-## Active Summary (input for /aif-plan)
+## Active Summary (input for $aif-plan)
 <!-- aif:active-summary:start -->
 Topic:
 Goal:
@@ -309,7 +327,7 @@ You: [reads codebase]
 
 **User is stuck mid-implementation:**
 ```
-User: /aif-explore add-auth-system
+User: $aif-explore add-auth-system
       The OAuth integration is more complex than expected
 
 You: [reads plan from .ai-factory/plans/add-auth-system.md]
@@ -359,7 +377,7 @@ You: That changes everything.
 
 There's no required ending. Discovery might:
 
-- **Flow into action**: "Ready to plan? Run `/aif-plan`"
+- **Flow into action**: "Ready to plan? Run `$aif-plan`"
 - **Result in context updates**: "Updated ARCHITECTURE.md with these decisions"
 - **Just provide clarity**: User has what they need, moves on
 - **Continue later**: "We can pick this up anytime"
@@ -376,7 +394,7 @@ When it feels like things are crystallizing, you might summarize:
 **Open questions**: [if any remain]
 
 **Next steps** (if ready):
-- Create a plan: /aif-plan [fast|full] <description>
+- Create a plan: $aif-plan [fast|full] <description>
 - Keep exploring: just keep talking
 ```
 

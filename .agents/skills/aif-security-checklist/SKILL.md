@@ -12,17 +12,17 @@ Comprehensive security checklist based on OWASP Top 10 (2021) and industry best 
 
 ## Quick Reference
 
-- `/aif-security-checklist` — Full audit checklist
-- `/aif-security-checklist auth` — Authentication & sessions
-- `/aif-security-checklist injection` — SQL/NoSQL/Command injection
-- `/aif-security-checklist xss` — Cross-site scripting
-- `/aif-security-checklist csrf` — Cross-site request forgery
-- `/aif-security-checklist secrets` — Secrets & credentials
-- `/aif-security-checklist api` — API security
-- `/aif-security-checklist infra` — Infrastructure security
-- `/aif-security-checklist prompt-injection` — LLM prompt injection
-- `/aif-security-checklist race-condition` — Race conditions & TOCTOU
-- `/aif-security-checklist ignore <item>` — Ignore a specific check item
+- `$aif-security-checklist` — Full audit checklist
+- `$aif-security-checklist auth` — Authentication & sessions
+- `$aif-security-checklist injection` — SQL/NoSQL/Command injection
+- `$aif-security-checklist xss` — Cross-site scripting
+- `$aif-security-checklist csrf` — Cross-site request forgery
+- `$aif-security-checklist secrets` — Secrets & credentials
+- `$aif-security-checklist api` — API security
+- `$aif-security-checklist infra` — Infrastructure security
+- `$aif-security-checklist prompt-injection` — LLM prompt injection
+- `$aif-security-checklist race-condition` — Race conditions & TOCTOU
+- `$aif-security-checklist ignore <item>` — Ignore a specific check item
 
 ## Config
 
@@ -40,14 +40,14 @@ Before running any audit, **always read** the resolved SECURITY.md path (default
 
 ### How ignoring works
 
-**When the user runs `/aif-security-checklist ignore <item>`:**
+**When the user runs `$aif-security-checklist ignore <item>`:**
 
 1. Read the current resolved SECURITY.md file (create if it doesn't exist)
 2. Ask the user for the reason why this item should be ignored
 3. Add the item to the file following the format below
 4. Confirm the item was added
 
-**When running any audit (`/aif-security-checklist` or a specific category):**
+**When running any audit (`$aif-security-checklist` or a specific category):**
 
 1. Read the resolved SECURITY.md file at the start
 2. For each ignored item that matches the current audit scope:
@@ -95,7 +95,7 @@ When audit results are shown, append this section at the end:
 │ no-csrf         │ SPA with token auth, no cookies used │ 2025-03-15 │
 │ no-rate-limit   │ Internal service, behind API gateway │ 2025-03-15 │
 └─────────────────┴──────────────────────────────────────┴────────────┘
-⚠️  2 items ignored. Run `/aif-security-checklist` without ignores to see full audit.
+⚠️  2 items ignored. Run `$aif-security-checklist` without ignores to see full audit.
 ```
 
 ---
@@ -104,7 +104,7 @@ When audit results are shown, append this section at the end:
 
 **Read `.ai-factory/skill-context/aif-security-checklist/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -144,7 +144,7 @@ This checks:
 
 ## Machine-Readable Gate Result
 
-For `/aif-security-checklist` audits (full audit or category audit), keep the human-readable security report first and append one final fenced `aif-gate-result` JSON block.
+For `$aif-security-checklist` audits (full audit or category audit), keep the human-readable security report first and append one final fenced `aif-gate-result` JSON block.
 
 Do not append this gate block for the `ignore <item>` writer flow unless that invocation also performs and reports an audit result.
 
@@ -159,7 +159,7 @@ Machine-readable fields:
 - Use `"blocking": true|false`.
 - Include only production-blocking findings in `"blockers": [`.
 - Include implicated paths in `"affected_files": [`.
-- Set `"suggested_next": {` to `/aif-fix` for code/config security fixes or `null` when no workflow command fits.
+- Set `"suggested_next": {` to `$aif-fix` for code/config security fixes or `null` when no workflow command fits.
 - Never include secrets, tokens, raw passwords, or private credentials in the JSON block.
 
 ```aif-gate-result
@@ -171,7 +171,7 @@ Machine-readable fields:
   "blockers": [],
   "affected_files": ["src/api/session.ts"],
   "suggested_next": {
-    "command": "/aif-fix",
+    "command": "$aif-fix",
     "reason": "Address non-blocking security hardening findings."
   }
 }
@@ -191,6 +191,8 @@ Machine-readable fields:
 - [ ] CSRF tokens on state-changing requests
 - [ ] Rate limiting enabled
 - [ ] Error messages don't leak sensitive info
+- [ ] Client-side debug logging is disabled in production or guarded by an explicit non-production environment check
+- [ ] Production UI never displays raw errors, stack traces, exception messages, SQL errors, request internals, or upstream service details
 - [ ] Dependencies scanned for vulnerabilities
 - [ ] LLM prompt injection mitigated (if using AI)
 - [ ] Race conditions prevented on critical operations (payments, inventory)
@@ -368,6 +370,37 @@ git push origin --force --all
 - [ ] OAuth 2.0 for third-party access
 ```
 
+### Client-Facing Logging & Errors
+```
+- [ ] Browser/client logs are disabled in production or routed through a logger that no-ops debug output in production
+- [ ] `console.log`, `console.debug`, `console.info`, and verbose client telemetry are gated by explicit non-production checks
+- [ ] Production UI shows only client-safe error messages with minimal operational detail
+- [ ] Raw exceptions, stack traces, SQL/ORM errors, validation library internals, upstream responses, file paths, env names, and secrets never reach UI text
+- [ ] Full error details are logged server-side only, correlated with a request/error ID returned to the client
+- [ ] Client-safe error payloads use stable codes/messages such as `VALIDATION_FAILED`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, or `INTERNAL_ERROR`
+```
+
+```typescript
+const isProduction = process.env.NODE_ENV === 'production';
+
+// ✅ Client debug output is explicit and removed/no-op in production paths
+if (!isProduction) {
+  console.debug('Form validation state', formState);
+}
+
+// ✅ Normalize unknown errors before rendering them in UI
+function toClientError(error: unknown) {
+  if (isKnownClientError(error)) {
+    return { code: error.code, message: error.publicMessage };
+  }
+
+  return {
+    code: 'INTERNAL_ERROR',
+    message: 'Something went wrong. Try again later.',
+  };
+}
+```
+
 ### Input Validation
 ```typescript
 // ✅ Validate all input with schema
@@ -382,7 +415,16 @@ const CreateUserSchema = z.object({
 app.post('/users', (req, res) => {
   const result = CreateUserSchema.safeParse(req.body);
   if (!result.success) {
-    return res.status(400).json({ error: result.error });
+    return res.status(400).json({
+      error: {
+        code: 'VALIDATION_FAILED',
+        message: 'Some fields are invalid.',
+        fields: result.error.issues.map((issue) => ({
+          path: issue.path.join('.'),
+          code: issue.code,
+        })),
+      },
+    });
   }
   // result.data is typed and validated
 });
@@ -396,7 +438,10 @@ app.use((err, req, res, next) => {
 
   // Return generic message to client
   res.status(500).json({
-    error: 'Internal server error',
+    error: {
+      code: 'INTERNAL_ERROR',
+      message: 'Something went wrong. Try again later.',
+    },
     requestId: req.id, // For support reference
   });
 });
@@ -506,6 +551,12 @@ grep -rn "[T][O][D][O].*security\|[F][I][X][M][E].*security\|[X][X][X].*security
 
 # Check for console.log in production code
 grep -rn "console\.log" src/
+
+# Check for verbose browser logs that need a non-production guard
+grep -rn "console\.\(log\|debug\|info\|trace\)" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" src/
+
+# Check for raw error rendering patterns in UI/client code
+grep -rn "\(error\.message\|err\.message\|String(error)\|String(err)\|stack\)" --include="*.tsx" --include="*.jsx" --include="*.ts" --include="*.js" src/
 
 # Find prompt injection risks (unsanitized input in LLM calls)
 grep -rn "system.*\${.*}" --include="*.ts" --include="*.js" .

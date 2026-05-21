@@ -84,7 +84,7 @@ If config.yaml doesn't exist, use defaults:
 
 **If the file DOES NOT exist AND `$ARGUMENTS` is empty:**
 
-- Tell the user: "No fix plan found and no problem description provided. Please either provide a bug description (`/aif-fix <description>`) or create a fix plan first."
+- Tell the user: "No fix plan found and no problem description provided. Please either provide a bug description (`$aif-fix <description>`) or create a fix plan first."
 - **STOP.**
 
 **If the file DOES NOT exist AND `$ARGUMENTS` is provided:**
@@ -103,7 +103,7 @@ If config.yaml doesn't exist, use defaults:
 
 **Read `.ai-factory/skill-context/aif-fix/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -233,7 +233,7 @@ Plan saved to the resolved fix plan path.
 
 Review the plan and when you're ready to execute, run:
 
-/aif-fix
+$aif-fix
 ```
 
 **Handoff sync (manual mode only):** If a Handoff task ID is known AND `HANDOFF_MODE` is NOT `1`, call `handoff_push_plan` with `{ taskId: <id>, planContent: <full fix plan text> }`, then `handoff_sync_status` with `{ taskId: <id>, newStatus: "plan_ready", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: true }`.
@@ -401,7 +401,7 @@ function fixedFunction(input) {
 
 ### Example 1: Null Reference Error
 
-**User:** `/aif-fix TypeError: Cannot read property 'name' of undefined in UserProfile`
+**User:** `$aif-fix TypeError: Cannot read property 'name' of undefined in UserProfile`
 
 **Actions:**
 
@@ -412,7 +412,7 @@ function fixedFunction(input) {
 
 ### Example 2: API Returns Wrong Data
 
-**User:** `/aif-fix /api/orders returns empty array for authenticated users`
+**User:** `$aif-fix /api/orders returns empty array for authenticated users`
 
 **Actions:**
 
@@ -424,7 +424,7 @@ function fixedFunction(input) {
 
 ### Example 3: Form Validation Not Working
 
-**User:** `/aif-fix email validation accepts invalid emails`
+**User:** `$aif-fix email validation accepts invalid emails`
 
 **Actions:**
 
@@ -446,7 +446,7 @@ function fixedFunction(input) {
 8. **Minimal changes** - Don't refactor unrelated code
 9. **One fix at a time** - Don't scope creep
 10. **Clean up** - Delete the resolved fix plan file after successful fix execution
-11. **Ownership boundary** - `/aif-fix` owns `paths.fix_plan` and `paths.patches`; treat `.ai-factory/DESCRIPTION.md`, roadmap, rules, and architecture context artifacts as read-only unless the user explicitly requests otherwise
+11. **Ownership boundary** - `$aif-fix` owns `paths.fix_plan` and `paths.patches`; treat `.ai-factory/DESCRIPTION.md`, roadmap, rules, and architecture context artifacts as read-only unless the user explicitly requests otherwise
 12. **Logging scope** - Keep `[FIX]` logging requirements for fixes; context-gate outputs in this command should use `WARN`/`ERROR` and must not change global logging policy in other skills
 
 ## After Fixing

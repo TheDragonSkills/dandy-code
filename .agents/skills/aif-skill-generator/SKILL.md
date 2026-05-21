@@ -18,7 +18,7 @@ You are an expert Agent Skills architect. You help users create professional, pr
 
 **Read `.ai-factory/skill-context/aif-skill-generator/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -98,7 +98,7 @@ Before running the scanner, find a working Python interpreter:
 ```bash
 PYTHON=$(command -v python3 || command -v python || echo "")
 ```
-If not found — ask user for path, offer to skip scan (at their risk), or suggest installing Python. If skipping, still perform Level 2 (manual review). See `/aif` skill for full detection flow.
+If not found — ask user for path, offer to skip scan (at their risk), or suggest installing Python. If skipping, still perform Level 2 (manual review). See `$aif` skill for full detection flow.
 
 ### Scan Workflow
 
@@ -135,12 +135,12 @@ For threat categories, severity levels, and user communication templates → rea
 
 ## Quick Commands
 
-- `/aif-skill-generator <name>` - Generate a new skill interactively
-- `/aif-skill-generator <url> [url2] [url3]...` - **Learn Mode**: study URLs and generate a skill from them
-- `/aif-skill-generator search <query>` - Search existing skills on skills.sh for inspiration
-- `/aif-skill-generator scan <path>` - **Security scan**: run two-level security check on a skill
-- `/aif-skill-generator validate <path>` - **Full validation**: structure check + two-level security scan
-- `/aif-skill-generator template <type>` - Get a template (basic, task, reference, visual)
+- `$aif-skill-generator <name>` - Generate a new skill interactively
+- `$aif-skill-generator <url> [url2] [url3]...` - **Learn Mode**: study URLs and generate a skill from them
+- `$aif-skill-generator search <query>` - Search existing skills on skills.sh for inspiration
+- `$aif-skill-generator scan <path>` - **Security scan**: run two-level security check on a skill
+- `$aif-skill-generator validate <path>` - **Full validation**: structure check + two-level security scan
+- `$aif-skill-generator template <type>` - Get a template (basic, task, reference, visual)
 
 ## Argument Detection
 
@@ -158,7 +158,7 @@ Check $ARGUMENTS:
 
 ### Security Scan Mode
 
-**Trigger:** `/aif-skill-generator scan <path>`
+**Trigger:** `$aif-skill-generator scan <path>`
 
 When `$ARGUMENTS` starts with `scan`:
 
@@ -201,7 +201,7 @@ When `$ARGUMENTS` starts with `scan`:
 
 ### Validate Mode
 
-**Trigger:** `/aif-skill-generator validate <path>`
+**Trigger:** `$aif-skill-generator validate <path>`
 
 When `$ARGUMENTS` starts with `validate`:
 
@@ -290,7 +290,7 @@ Follow the [Learn Mode Workflow](references/LEARN-MODE.md).
 4. Synthesize all material into a knowledge base
 5. Ask the user 2-3 targeted questions (skill name, type, customization)
 6. Generate a complete skill package enriched with the learned content
-7. **AUTO-SCAN**: Run `/aif-skill-generator scan <generated-skill-path>` on the result
+7. **AUTO-SCAN**: Run `$aif-skill-generator scan <generated-skill-path>` on the result
 
 If NO URLs and no special command detected — proceed with the standard workflow below.
 

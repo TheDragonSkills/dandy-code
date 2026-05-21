@@ -33,7 +33,7 @@ If config.yaml doesn't exist, use defaults:
 
 **Read `.ai-factory/skill-context/aif-roadmap/SKILL.md`** — MANDATORY if the file exists.
 
-This file contains project-specific rules accumulated by `/aif-evolve` from patches,
+This file contains project-specific rules accumulated by `$aif-evolve` from patches,
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
@@ -123,7 +123,7 @@ Create the resolved roadmap artifact (default: `.ai-factory/ROADMAP.md`) with th
 ```
 
 **Rules for milestones:**
-- Each milestone is a **high-level goal**, not a granular task (that's `/aif-plan`)
+- Each milestone is a **high-level goal**, not a granular task (that's `$aif-plan`)
 - 5-15 milestones is the sweet spot — fewer means too vague, more means too granular
 - Order by logical sequence (dependencies first)
 - Mark already-completed milestones as `[x]` and add them to the Completed table
@@ -216,17 +216,17 @@ Completed: X/N
 Next up: **Milestone Name**
 
 To start working on the next milestone:
-/aif-plan <milestone description>  → creates a plan and optional branch/worktree flow
-/aif-implement                     → executes the plan
+$aif-plan <milestone description>  → creates a plan and optional branch/worktree flow
+$aif-implement                     → executes the plan
 ```
 
 ---
 
-### Mode 3: Check Progress (`/aif-roadmap check`)
+### Mode 3: Check Progress (`$aif-roadmap check`)
 
 Automated scan — analyze the codebase and mark completed milestones without interactive questions.
 
-**Requires** the resolved roadmap path to exist. If it doesn't — tell the user to run `/aif-roadmap` first.
+**Requires** the resolved roadmap path to exist. If it doesn't — tell the user to run `$aif-roadmap` first.
 
 **3.1: Read roadmap and project context**
 
@@ -300,5 +300,5 @@ Next up: **Milestone Name**
 2. **ROADMAP.md is the source of truth** — always read before modifying
 3. **Never remove milestones silently** — always confirm with user before removing
 4. **Completed table tracks history** — every checked milestone gets a date entry
-5. **NO implementation** — this skill only plans, use `/aif-plan` to start a feature and `/aif-implement` to execute
-6. **Ownership boundary** — this command owns roadmap structure/content; `/aif-implement` may only mark milestones completed when implementation evidence is clear
+5. **NO implementation** — this skill only plans, use `$aif-plan` to start a feature and `$aif-implement` to execute
+6. **Ownership boundary** — this command owns roadmap structure/content; `$aif-implement` may only mark milestones completed when implementation evidence is clear
