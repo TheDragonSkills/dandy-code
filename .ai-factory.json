@@ -1,5 +1,5 @@
 {
-  "version": "2.13.0",
+  "version": "2.13.1",
   "agents": [
     {
       "id": "codex-app",
@@ -29,13 +29,6 @@
         "aif-skill-generator",
         "aif-verify"
       ],
-      "mcp": {
-        "github": false,
-        "filesystem": true,
-        "postgres": false,
-        "chromeDevtools": false,
-        "playwright": false
-      },
       "managedSkills": {
         "aif": {
           "sourceHash": "61daea0d61aedac85290dc684da29c61c4e99ec2a1e53fb5dbe382ee27d42579",
@@ -54,8 +47,8 @@
           "installedHash": "9878fcd8afb1225155b87528e9b38db4b8cb805b1897ff51fa15075012490827"
         },
         "aif-distillation": {
-          "sourceHash": "372913c37e0b1925a8799085ae6121a40b222e33f3372e128a943d933a67e7ab",
-          "installedHash": "af303470be49ffc60faf5c663e6b84e43a3ef5a586d9c7a5e319be6af06950d1"
+          "sourceHash": "1bae768ad6d5e56866c8c4b1358665cb10a9d52cf69c7ebaf20af1984c5e07d3",
+          "installedHash": "49ad297fcb5863167e5bd01bdd819aa52b388539a03ae3457bd3d8838739532b"
         },
         "aif-docs": {
           "sourceHash": "489958faf586f83a96048366e766851b81d909222d082dedb5e8b7de8966fbc8",
@@ -130,7 +123,18 @@
           "installedHash": "076d1616d800805f25fbbe08f310e553a11a81ae9d86306a44a2cec6d49d3e05"
         }
       },
-      "agentFileSources": {}
+      "installedAgentFiles": [],
+      "agentFileSources": {},
+      "managedAgentFiles": {},
+      "installedConfigFiles": [],
+      "managedConfigFiles": {},
+      "mcp": {
+        "github": false,
+        "filesystem": true,
+        "postgres": false,
+        "chromeDevtools": false,
+        "playwright": false
+      }
     }
   ],
   "extensions": []
