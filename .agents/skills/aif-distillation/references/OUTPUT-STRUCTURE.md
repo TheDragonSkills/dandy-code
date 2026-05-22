@@ -5,10 +5,10 @@ Use this structure for skills created by `aif-distillation`.
 ## Target Package
 
 ```text
-.agents/skills/<skill-name>/
+<output-root>/<skill-name>/
 ├── SKILL.md
 ├── references/
-│   ├── SOURCE-MAP.md
+│   ├── SOURCE-MAP.md   # omit when --redact-source-map is present
 │   ├── CORE-PRINCIPLES.md
 │   ├── WORKFLOW.md
 │   └── CHECKLISTS.md
@@ -33,22 +33,23 @@ When the user passes `--split` or `--split-by <strategy>`, create multiple
 focused skill packages instead of one broad package:
 
 ```text
-.agents/skills/
-├── <child-skill-a>/
+<output-root>/
+├── <prefix>-<child-skill-a>/
 │   ├── SKILL.md
 │   ├── references/
-│   │   ├── SOURCE-MAP.md
+│   │   ├── SOURCE-MAP.md   # omit when --redact-source-map is present
 │   │   └── <focused-reference>.md
 │   └── examples/
 │       └── <focused-examples>.md
-├── <child-skill-b>/
+├── <prefix>-<child-skill-b>/
 │   └── SKILL.md
 └── <optional-index-skill>/
     └── SKILL.md
 ```
 
 Do not create a parent directory that contains child skills. Agent runtimes
-discover skills as direct children of `.agents/skills`.
+discover skills as direct children of the output root when that root is an
+agent skills directory.
 
 Create an optional index/router skill only when it is genuinely useful, for
 example when the split set is large or users need a single command-style entry
@@ -62,28 +63,50 @@ boundaries include:
 - a distinct refactoring operation, such as `early-return-simplifier`
 - a distinct framework or runtime practice, such as `laravel-query-boundaries`
 - a distinct writing or analysis workflow, such as `comments-curator`
+- a distinct non-code goal, such as `argument-edit`, `decision-brief`,
+  `incident-triage`, `practice-drill`, or `risk-review`
 
 Avoid split boundaries based only on source chapter titles when the resulting
 skills would have the same trigger and workflow.
 
 ## Destination
 
-Save the distilled skill in the configured skills directory of the currently active agent:
+Save the distilled skill in the configured skills directory of the currently active agent by default:
 
 ```text
 .agents/skills/<skill-name>/
 ```
 
 `.agents/skills` is resolved by AI Factory for the active agent installation.
+If the user passes `--path <directory>`, use that directory as the output root
+instead:
+
+```text
+<directory>/<skill-name>/
+```
+
+`--path` is a parent output directory for generated skill package directories,
+not the skill package name itself. Resolve relative `--path` values from the
+current working directory. Create the output root if it does not exist; reject
+it if it resolves to an existing file. For a single exact destination, the user
+should pass `--path <parent-dir> --name <directory-name>`.
 
 Do not write distilled output into AI Factory's package `skills/` directory unless the task is explicitly to add a built-in AI Factory skill.
 
-Before writing, resolve and canonicalize the final destination path. It must stay inside the resolved `.agents/skills` directory.
+Before writing, resolve and canonicalize the output root and final destination
+path. The final destination must stay inside the resolved output root. When
+`--path` is absent, the output root is `.agents/skills`.
 
 For split mode, apply this same validation to every generated child skill path.
-If `--name <seed>` is supplied, use it as a naming seed or short prefix only
-when it improves discoverability. Prefer clear standalone names over repetitive
-prefixes.
+Every generated child name must use one shared namespace prefix:
+
+- use `--name <skill-name>` as the prefix when supplied
+- otherwise derive a concise prefix from the book title or primary material title
+- when source-map redaction is requested, avoid exposing a private title and use
+  `--name` or a neutral material/topic prefix instead
+- write children as `<output-root>/<prefix>-<child-scope>/`
+- do not create unprefixed split children, even when the child scope reads well
+  by itself
 
 ## Naming
 
@@ -101,6 +124,10 @@ Good:
 - `domain-modeling`
 - `api-design-rules`
 - `incident-review`
+- `argument-edit`
+- `decision-brief`
+- `practice-drill`
+- `risk-review`
 
 Avoid:
 
@@ -112,11 +139,15 @@ Avoid:
 
 In split mode, generate a name list before writing and check it as a set:
 
+- every name must start with the same resolved namespace prefix plus `-`
 - every name must pass the same validation rules
 - no name may collide with another generated child
 - no generated child may shadow a built-in `aif-*` skill
-- names should describe activation scope, not provenance
-- when multiple child names share a long prefix, remove the prefix unless it is needed to prevent ambiguity
+- the suffix after the prefix should describe the user goal and expected action, not provenance
+- avoid double-prefixing names when a candidate suffix already contains the prefix
+- avoid abstract source-theme suffixes such as `principles`, `philosophy`,
+  `evolution`, `mindset`, or `chapter-3` unless the user explicitly requested
+  that taxonomy
 
 ## SKILL.md Rules
 
@@ -147,7 +178,7 @@ For AI Factory-style skills, also include:
 
 | File | Purpose |
 |------|---------|
-| `SOURCE-MAP.md` | Sources, coverage, and attribution |
+| `SOURCE-MAP.md` | Sources, coverage, and attribution; omit entirely when `--redact-source-map` is present |
 | `CORE-PRINCIPLES.md` | Dense distilled concepts and rules |
 | `WORKFLOW.md` | Step-by-step operating procedure |
 | `CHECKLISTS.md` | Review gates and quality criteria |
@@ -155,6 +186,15 @@ For AI Factory-style skills, also include:
 | `GLOSSARY.md` | Terms that affect interpretation |
 
 Prefer stable, obvious filenames over clever names.
+
+When `--redact-source-map` is present:
+
+- do not create `references/SOURCE-MAP.md`
+- do not create a "Source Map" section in `SKILL.md` or any reference file
+- remove any empty `SOURCE-MAP.md` created while drafting
+- in `--update` mode, leave an existing non-empty `SOURCE-MAP.md` unchanged
+  unless the user explicitly asks to remove or rewrite it
+- keep source coverage checks in the private working notes only
 
 ## Example File Roles
 

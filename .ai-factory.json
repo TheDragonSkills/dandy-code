@@ -1,5 +1,5 @@
 {
-  "version": "2.13.1",
+  "version": "2.13.2",
   "agents": [
     {
       "id": "codex-app",
@@ -47,8 +47,8 @@
           "installedHash": "9878fcd8afb1225155b87528e9b38db4b8cb805b1897ff51fa15075012490827"
         },
         "aif-distillation": {
-          "sourceHash": "1bae768ad6d5e56866c8c4b1358665cb10a9d52cf69c7ebaf20af1984c5e07d3",
-          "installedHash": "49ad297fcb5863167e5bd01bdd819aa52b388539a03ae3457bd3d8838739532b"
+          "sourceHash": "d5266762267acd73e1f5c5486e4b48eaf5a9c20300b18d6b81645b6c914bd091",
+          "installedHash": "1fbdb3cf1874b38a7351d6fa9dbf1debe550bf504c43018b1b63b03540ac2350"
         },
         "aif-docs": {
           "sourceHash": "489958faf586f83a96048366e766851b81d909222d082dedb5e8b7de8966fbc8",
