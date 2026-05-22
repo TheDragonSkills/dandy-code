@@ -1,5 +1,5 @@
 {
-  "version": "2.12.0",
+  "version": "2.13.0",
   "agents": [
     {
       "id": "codex-app",
@@ -9,6 +9,7 @@
         "aif-architecture",
         "aif-best-practices",
         "aif-commit",
+        "aif-distillation",
         "aif-docs",
         "aif-evolve",
         "aif-explore",
@@ -49,8 +50,12 @@
           "installedHash": "a48a57376449825ad99843e1350271ea9d0a0652e54943f624bca5e451e329ad"
         },
         "aif-commit": {
-          "sourceHash": "fcd8c2378d507a86620bd0f9d26031769cc01ea4cec86b5e2cad4ebe00dd48c5",
-          "installedHash": "aec25c6854630df205f38c1a952dd3ee178a7b0ffa197f1d3a5c87385c68f564"
+          "sourceHash": "d97834ad84f1559d51cdecc1523320e6d79feca84c3c2342254c0bce12a45c5b",
+          "installedHash": "9878fcd8afb1225155b87528e9b38db4b8cb805b1897ff51fa15075012490827"
+        },
+        "aif-distillation": {
+          "sourceHash": "372913c37e0b1925a8799085ae6121a40b222e33f3372e128a943d933a67e7ab",
+          "installedHash": "af303470be49ffc60faf5c663e6b84e43a3ef5a586d9c7a5e319be6af06950d1"
         },
         "aif-docs": {
           "sourceHash": "489958faf586f83a96048366e766851b81d909222d082dedb5e8b7de8966fbc8",
