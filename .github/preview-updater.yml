@@ -2,6 +2,7 @@ package:
   manager: none
 
 data:
+  title: 'Dandy Code Skill'
   description: 'by The Dragon Code'
 
 image:
