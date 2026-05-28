@@ -12,7 +12,7 @@ outside the submodule.
 ## Quick Start
 
 ```shell
-npx skills add https://github.com/TheDragonCode/dandy-code-skill
+npx skills add https://github.com/TheDragonSkills/dandy-code-skill
 ```
 
 ## Key Features
